@@ -13,7 +13,32 @@ const SessionResetConfigSchema = z
     atHour: z.number().int().min(0).max(23).optional(),
     idleMinutes: z.number().int().positive().optional(),
   })
-  ;
+  .strict();
+
+export const SessionSendPolicySchema = z
+  .object({
+    default: z.union([z.literal("allow"), z.literal("deny")]).optional(),
+    rules: z
+      .array(
+        z
+          .object({
+            action: z.union([z.literal("allow"), z.literal("deny")]),
+            match: z
+              .object({
+                channel: z.string().optional(),
+                chatType: z
+                  .union([z.literal("direct"), z.literal("group"), z.literal("channel")])
+                  .optional(),
+                keyPrefix: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+          })
+          .strict(),
+      )
+      .optional(),
+  })
+  .strict();
 
 export const SessionSchema = z
   .object({
@@ -36,7 +61,7 @@ export const SessionSchema = z
         group: SessionResetConfigSchema.optional(),
         thread: SessionResetConfigSchema.optional(),
       })
-      
+      .strict()
       .optional(),
     resetByChannel: z.record(z.string(), SessionResetConfigSchema).optional(),
     store: z.string().optional(),
@@ -50,39 +75,15 @@ export const SessionSchema = z
       ])
       .optional(),
     mainKey: z.string().optional(),
-    sendPolicy: z
-      .object({
-        default: z.union([z.literal("allow"), z.literal("deny")]).optional(),
-        rules: z
-          .array(
-            z
-              .object({
-                action: z.union([z.literal("allow"), z.literal("deny")]),
-                match: z
-                  .object({
-                    channel: z.string().optional(),
-                    chatType: z
-                      .union([z.literal("direct"), z.literal("group"), z.literal("channel")])
-                      .optional(),
-                    keyPrefix: z.string().optional(),
-                  })
-                  
-                  .optional(),
-              })
-              ,
-          )
-          .optional(),
-      })
-      
-      .optional(),
+    sendPolicy: SessionSendPolicySchema.optional(),
     agentToAgent: z
       .object({
         maxPingPongTurns: z.number().int().min(0).max(5).optional(),
       })
-      
+      .strict()
       .optional(),
   })
-  
+  .strict()
   .optional();
 
 export const MessagesSchema = z
@@ -97,7 +98,7 @@ export const MessagesSchema = z
     removeAckAfterReply: z.boolean().optional(),
     tts: TtsConfigSchema,
   })
-  
+  .strict()
   .optional();
 
 export const CommandsSchema = z
@@ -111,7 +112,8 @@ export const CommandsSchema = z
     debug: z.boolean().optional(),
     restart: z.boolean().optional(),
     useAccessGroups: z.boolean().optional(),
+    ownerAllowFrom: z.array(z.union([z.string(), z.number()])).optional(),
   })
-  
+  .strict()
   .optional()
   .default({ native: "auto", nativeSkills: "auto" });

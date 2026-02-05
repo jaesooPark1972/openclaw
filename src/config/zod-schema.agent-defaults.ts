@@ -150,6 +150,7 @@ export const AgentDefaultsSchema = z
               ,
           ])
           .optional(),
+        thinking: z.string().optional(),
       })
       
       .optional(),
