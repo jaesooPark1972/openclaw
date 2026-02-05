@@ -19,7 +19,7 @@
 # 🦞 OpenClaw (Antigravity System) 한국어 완전 가이드
 
 **Updated:** 2026.02.05  
-**Author:** Antigravity AI
+**Author:** Jaesoo Park
 
 이 문서는 OpenClaw 시스템을 처음 사용하는 사용자를 위한 **공식 한글 완전 가이드**입니다.
 
