@@ -13,7 +13,7 @@ const SessionResetConfigSchema = z
     atHour: z.number().int().min(0).max(23).optional(),
     idleMinutes: z.number().int().positive().optional(),
   })
-  .strict();
+  ;
 
 export const SessionSchema = z
   .object({
@@ -36,7 +36,7 @@ export const SessionSchema = z
         group: SessionResetConfigSchema.optional(),
         thread: SessionResetConfigSchema.optional(),
       })
-      .strict()
+      
       .optional(),
     resetByChannel: z.record(z.string(), SessionResetConfigSchema).optional(),
     store: z.string().optional(),
@@ -66,23 +66,23 @@ export const SessionSchema = z
                       .optional(),
                     keyPrefix: z.string().optional(),
                   })
-                  .strict()
+                  
                   .optional(),
               })
-              .strict(),
+              ,
           )
           .optional(),
       })
-      .strict()
+      
       .optional(),
     agentToAgent: z
       .object({
         maxPingPongTurns: z.number().int().min(0).max(5).optional(),
       })
-      .strict()
+      
       .optional(),
   })
-  .strict()
+  
   .optional();
 
 export const MessagesSchema = z
@@ -97,7 +97,7 @@ export const MessagesSchema = z
     removeAckAfterReply: z.boolean().optional(),
     tts: TtsConfigSchema,
   })
-  .strict()
+  
   .optional();
 
 export const CommandsSchema = z
@@ -112,6 +112,6 @@ export const CommandsSchema = z
     restart: z.boolean().optional(),
     useAccessGroups: z.boolean().optional(),
   })
-  .strict()
+  
   .optional()
   .default({ native: "auto", nativeSkills: "auto" });

@@ -71,3 +71,46 @@ USER.md
 
 # local tooling
 .serena/
+
+# Security & Secrets (Antigravity Rule)
+**/*.env
+**/*.env.local
+**/.env.*
+openclaw.json
+**/openclaw.json
+**/*_secret.json
+**/*_key.pem
+**/*.pfx
+**/*.p12
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+out.log
+
+# Build Artifacts
+dist/
+build/
+*.tlog
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.recipe
+*.ipch
+.vs/
+*.user
+*.suo
+*.opensdf
+*.sdf
+tsbuildinfo
+*.tsbuildinfo
+
+# OS Junk
+Thumbs.db
+ehthumbs.db
+Desktop.ini

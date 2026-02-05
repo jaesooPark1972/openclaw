@@ -8,7 +8,7 @@ export const AgentsSchema = z
     defaults: z.lazy(() => AgentDefaultsSchema).optional(),
     list: z.array(AgentEntrySchema).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const BindingsSchema = z
@@ -25,14 +25,14 @@ export const BindingsSchema = z
                 kind: z.union([z.literal("dm"), z.literal("group"), z.literal("channel")]),
                 id: z.string(),
               })
-              .strict()
+              
               .optional(),
             guildId: z.string().optional(),
             teamId: z.string().optional(),
           })
-          .strict(),
+          ,
       })
-      .strict(),
+      ,
   )
   .optional();
 
@@ -49,5 +49,5 @@ export const AudioSchema = z
   .object({
     transcription: TranscribeAudioSchema,
   })
-  .strict()
+  
   .optional();

@@ -29,7 +29,7 @@ export const WhatsAppAccountSchema = z
     groupPolicy: GroupPolicySchema.optional().default("allowlist"),
     historyLimit: z.number().int().min(0).optional(),
     dmHistoryLimit: z.number().int().min(0).optional(),
-    dms: z.record(z.string(), DmConfigSchema.optional()).optional(),
+    dms: z.record(z.string(), DmConfigSchema).optional(),
     textChunkLimit: z.number().int().positive().optional(),
     chunkMode: z.enum(["length", "newline"]).optional(),
     mediaMaxMb: z.number().int().positive().optional(),
@@ -44,7 +44,7 @@ export const WhatsAppAccountSchema = z
             tools: ToolPolicySchema,
             toolsBySender: ToolPolicyBySenderSchema,
           })
-          .strict()
+          
           .optional(),
       )
       .optional(),
@@ -54,12 +54,12 @@ export const WhatsAppAccountSchema = z
         direct: z.boolean().optional().default(true),
         group: z.enum(["always", "mentions", "never"]).optional().default("mentions"),
       })
-      .strict()
+      
       .optional(),
     debounceMs: z.number().int().nonnegative().optional().default(0),
     heartbeat: ChannelHeartbeatVisibilitySchema,
   })
-  .strict()
+  
   .superRefine((value, ctx) => {
     if (value.dmPolicy !== "open") {
       return;
@@ -77,7 +77,7 @@ export const WhatsAppAccountSchema = z
 
 export const WhatsAppConfigSchema = z
   .object({
-    accounts: z.record(z.string(), WhatsAppAccountSchema.optional()).optional(),
+    accounts: z.record(z.string(), WhatsAppAccountSchema).optional(),
     capabilities: z.array(z.string()).optional(),
     markdown: MarkdownConfigSchema,
     configWrites: z.boolean().optional(),
@@ -90,7 +90,7 @@ export const WhatsAppConfigSchema = z
     groupPolicy: GroupPolicySchema.optional().default("allowlist"),
     historyLimit: z.number().int().min(0).optional(),
     dmHistoryLimit: z.number().int().min(0).optional(),
-    dms: z.record(z.string(), DmConfigSchema.optional()).optional(),
+    dms: z.record(z.string(), DmConfigSchema).optional(),
     textChunkLimit: z.number().int().positive().optional(),
     chunkMode: z.enum(["length", "newline"]).optional(),
     mediaMaxMb: z.number().int().positive().optional().default(50),
@@ -102,7 +102,7 @@ export const WhatsAppConfigSchema = z
         sendMessage: z.boolean().optional(),
         polls: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     groups: z
       .record(
@@ -113,7 +113,7 @@ export const WhatsAppConfigSchema = z
             tools: ToolPolicySchema,
             toolsBySender: ToolPolicyBySenderSchema,
           })
-          .strict()
+          
           .optional(),
       )
       .optional(),
@@ -123,12 +123,12 @@ export const WhatsAppConfigSchema = z
         direct: z.boolean().optional().default(true),
         group: z.enum(["always", "mentions", "never"]).optional().default("mentions"),
       })
-      .strict()
+      
       .optional(),
     debounceMs: z.number().int().nonnegative().optional().default(0),
     heartbeat: ChannelHeartbeatVisibilitySchema,
   })
-  .strict()
+  
   .superRefine((value, ctx) => {
     if (value.dmPolicy !== "open") {
       return;

@@ -11,7 +11,7 @@ const BrowserSnapshotDefaultsSchema = z
   .object({
     mode: z.literal("efficient").optional(),
   })
-  .strict()
+  
   .optional();
 
 const NodeHostSchema = z
@@ -21,10 +21,10 @@ const NodeHostSchema = z
         enabled: z.boolean().optional(),
         allowProfiles: z.array(z.string()).optional(),
       })
-      .strict()
+      
       .optional(),
   })
-  .strict()
+  
   .optional();
 
 export const OpenClawSchema = z
@@ -34,7 +34,7 @@ export const OpenClawSchema = z
         lastTouchedVersion: z.string().optional(),
         lastTouchedAt: z.string().optional(),
       })
-      .strict()
+      
       .optional(),
     env: z
       .object({
@@ -43,7 +43,7 @@ export const OpenClawSchema = z
             enabled: z.boolean().optional(),
             timeoutMs: z.number().int().nonnegative().optional(),
           })
-          .strict()
+          
           .optional(),
         vars: z.record(z.string(), z.string()).optional(),
       })
@@ -57,7 +57,7 @@ export const OpenClawSchema = z
         lastRunCommand: z.string().optional(),
         lastRunMode: z.union([z.literal("local"), z.literal("remote")]).optional(),
       })
-      .strict()
+      
       .optional(),
     diagnostics: z
       .object({
@@ -76,7 +76,7 @@ export const OpenClawSchema = z
             sampleRate: z.number().min(0).max(1).optional(),
             flushIntervalMs: z.number().int().nonnegative().optional(),
           })
-          .strict()
+          
           .optional(),
         cacheTrace: z
           .object({
@@ -86,10 +86,10 @@ export const OpenClawSchema = z
             includePrompt: z.boolean().optional(),
             includeSystem: z.boolean().optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     logging: z
       .object({
@@ -122,14 +122,14 @@ export const OpenClawSchema = z
         redactSensitive: z.union([z.literal("off"), z.literal("tools")]).optional(),
         redactPatterns: z.array(z.string()).optional(),
       })
-      .strict()
+      
       .optional(),
     update: z
       .object({
         channel: z.union([z.literal("stable"), z.literal("beta"), z.literal("dev")]).optional(),
         checkOnStart: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     browser: z
       .object({
@@ -157,14 +157,14 @@ export const OpenClawSchema = z
                 driver: z.union([z.literal("openclaw"), z.literal("extension")]).optional(),
                 color: HexColorSchema,
               })
-              .strict()
+              
               .refine((value) => value.cdpPort || value.cdpUrl, {
                 message: "Profile must set cdpPort or cdpUrl",
               }),
           )
           .optional(),
       })
-      .strict()
+      
       .optional(),
     ui: z
       .object({
@@ -174,10 +174,10 @@ export const OpenClawSchema = z
             name: z.string().max(50).optional(),
             avatar: z.string().max(200).optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     auth: z
       .object({
@@ -190,7 +190,7 @@ export const OpenClawSchema = z
                 mode: z.union([z.literal("api_key"), z.literal("oauth"), z.literal("token")]),
                 email: z.string().optional(),
               })
-              .strict(),
+              ,
           )
           .optional(),
         order: z.record(z.string(), z.array(z.string())).optional(),
@@ -201,10 +201,10 @@ export const OpenClawSchema = z
             billingMaxHours: z.number().positive().optional(),
             failureWindowHours: z.number().positive().optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     models: ModelsConfigSchema,
     nodeHost: NodeHostSchema,
@@ -217,7 +217,7 @@ export const OpenClawSchema = z
       .object({
         preserveFilenames: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     messages: MessagesSchema,
     commands: CommandsSchema,
@@ -229,7 +229,7 @@ export const OpenClawSchema = z
         store: z.string().optional(),
         maxConcurrentRuns: z.number().int().positive().optional(),
       })
-      .strict()
+      
       .optional(),
     hooks: z
       .object({
@@ -243,7 +243,7 @@ export const OpenClawSchema = z
         gmail: HooksGmailSchema,
         internal: InternalHooksSchema,
       })
-      .strict()
+      
       .optional(),
     web: z
       .object({
@@ -257,10 +257,10 @@ export const OpenClawSchema = z
             jitter: z.number().min(0).max(1).optional(),
             maxAttempts: z.number().int().min(0).optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     channels: ChannelsSchema,
     discovery: z
@@ -270,16 +270,16 @@ export const OpenClawSchema = z
             enabled: z.boolean().optional(),
             domain: z.string().optional(),
           })
-          .strict()
+          
           .optional(),
         mdns: z
           .object({
             mode: z.enum(["off", "minimal", "full"]).optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     canvasHost: z
       .object({
@@ -288,7 +288,7 @@ export const OpenClawSchema = z
         port: z.number().int().positive().optional(),
         liveReload: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     talk: z
       .object({
@@ -299,7 +299,7 @@ export const OpenClawSchema = z
         apiKey: z.string().optional(),
         interruptOnSpeech: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     gateway: z
       .object({
@@ -321,7 +321,7 @@ export const OpenClawSchema = z
             allowInsecureAuth: z.boolean().optional(),
             dangerouslyDisableDeviceAuth: z.boolean().optional(),
           })
-          .strict()
+          
           .optional(),
         auth: z
           .object({
@@ -330,7 +330,7 @@ export const OpenClawSchema = z
             password: z.string().optional(),
             allowTailscale: z.boolean().optional(),
           })
-          .strict()
+          
           .optional(),
         trustedProxies: z.array(z.string()).optional(),
         tailscale: z
@@ -338,7 +338,7 @@ export const OpenClawSchema = z
             mode: z.union([z.literal("off"), z.literal("serve"), z.literal("funnel")]).optional(),
             resetOnExit: z.boolean().optional(),
           })
-          .strict()
+          
           .optional(),
         remote: z
           .object({
@@ -350,7 +350,7 @@ export const OpenClawSchema = z
             sshTarget: z.string().optional(),
             sshIdentity: z.string().optional(),
           })
-          .strict()
+          
           .optional(),
         reload: z
           .object({
@@ -364,7 +364,7 @@ export const OpenClawSchema = z
               .optional(),
             debounceMs: z.number().int().min(0).optional(),
           })
-          .strict()
+          
           .optional(),
         tls: z
           .object({
@@ -383,7 +383,7 @@ export const OpenClawSchema = z
                   .object({
                     enabled: z.boolean().optional(),
                   })
-                  .strict()
+                  
                   .optional(),
                 responses: z
                   .object({
@@ -403,10 +403,10 @@ export const OpenClawSchema = z
                             maxPixels: z.number().int().positive().optional(),
                             minTextChars: z.number().int().nonnegative().optional(),
                           })
-                          .strict()
+                          
                           .optional(),
                       })
-                      .strict()
+                      
                       .optional(),
                     images: z
                       .object({
@@ -416,16 +416,16 @@ export const OpenClawSchema = z
                         maxRedirects: z.number().int().nonnegative().optional(),
                         timeoutMs: z.number().int().positive().optional(),
                       })
-                      .strict()
+                      
                       .optional(),
                   })
-                  .strict()
+                  
                   .optional(),
               })
-              .strict()
+              
               .optional(),
           })
-          .strict()
+          
           .optional(),
         nodes: z
           .object({
@@ -436,15 +436,15 @@ export const OpenClawSchema = z
                   .optional(),
                 node: z.string().optional(),
               })
-              .strict()
+              
               .optional(),
             allowCommands: z.array(z.string()).optional(),
             denyCommands: z.array(z.string()).optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     skills: z
       .object({
@@ -455,7 +455,7 @@ export const OpenClawSchema = z
             watch: z.boolean().optional(),
             watchDebounceMs: z.number().int().min(0).optional(),
           })
-          .strict()
+          
           .optional(),
         install: z
           .object({
@@ -464,7 +464,7 @@ export const OpenClawSchema = z
               .union([z.literal("npm"), z.literal("pnpm"), z.literal("yarn"), z.literal("bun")])
               .optional(),
           })
-          .strict()
+          
           .optional(),
         entries: z
           .record(
@@ -476,11 +476,11 @@ export const OpenClawSchema = z
                 env: z.record(z.string(), z.string()).optional(),
                 config: z.record(z.string(), z.unknown()).optional(),
               })
-              .strict(),
+              ,
           )
           .optional(),
       })
-      .strict()
+      
       .optional(),
     plugins: z
       .object({
@@ -491,13 +491,13 @@ export const OpenClawSchema = z
           .object({
             paths: z.array(z.string()).optional(),
           })
-          .strict()
+          
           .optional(),
         slots: z
           .object({
             memory: z.string().optional(),
           })
-          .strict()
+          
           .optional(),
         entries: z
           .record(
@@ -507,7 +507,7 @@ export const OpenClawSchema = z
                 enabled: z.boolean().optional(),
                 config: z.record(z.string(), z.unknown()).optional(),
               })
-              .strict(),
+              ,
           )
           .optional(),
         installs: z
@@ -522,14 +522,14 @@ export const OpenClawSchema = z
                 version: z.string().optional(),
                 installedAt: z.string().optional(),
               })
-              .strict(),
+              ,
           )
           .optional(),
       })
-      .strict()
+      
       .optional(),
   })
-  .strict()
+  
   .superRefine((cfg, ctx) => {
     const agents = cfg.agents?.list ?? [];
     if (agents.length === 0) {

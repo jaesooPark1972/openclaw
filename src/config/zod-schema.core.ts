@@ -19,7 +19,7 @@ export const ModelCompatSchema = z
       .union([z.literal("max_completion_tokens"), z.literal("max_tokens")])
       .optional(),
   })
-  .strict()
+  
   .optional();
 
 export const ModelDefinitionSchema = z
@@ -36,14 +36,14 @@ export const ModelDefinitionSchema = z
         cacheRead: z.number().optional(),
         cacheWrite: z.number().optional(),
       })
-      .strict()
+      
       .optional(),
     contextWindow: z.number().positive().optional(),
     maxTokens: z.number().positive().optional(),
     headers: z.record(z.string(), z.string()).optional(),
     compat: ModelCompatSchema,
   })
-  .strict();
+  ;
 
 export const ModelProviderSchema = z
   .object({
@@ -57,7 +57,7 @@ export const ModelProviderSchema = z
     authHeader: z.boolean().optional(),
     models: z.array(ModelDefinitionSchema),
   })
-  .strict();
+  ;
 
 export const BedrockDiscoverySchema = z
   .object({
@@ -68,7 +68,7 @@ export const BedrockDiscoverySchema = z
     defaultContextWindow: z.number().int().positive().optional(),
     defaultMaxTokens: z.number().int().positive().optional(),
   })
-  .strict()
+  
   .optional();
 
 export const ModelsConfigSchema = z
@@ -77,7 +77,7 @@ export const ModelsConfigSchema = z
     providers: z.record(z.string(), ModelProviderSchema).optional(),
     bedrockDiscovery: BedrockDiscoverySchema,
   })
-  .strict()
+  
   .optional();
 
 export const GroupChatSchema = z
@@ -85,14 +85,14 @@ export const GroupChatSchema = z
     mentionPatterns: z.array(z.string()).optional(),
     historyLimit: z.number().int().positive().optional(),
   })
-  .strict()
+  
   .optional();
 
 export const DmConfigSchema = z
   .object({
     historyLimit: z.number().int().min(0).optional(),
   })
-  .strict();
+  ;
 
 export const IdentitySchema = z
   .object({
@@ -101,7 +101,7 @@ export const IdentitySchema = z
     emoji: z.string().optional(),
     avatar: z.string().optional(),
   })
-  .strict()
+  
   .optional();
 
 export const QueueModeSchema = z.union([
@@ -134,7 +134,7 @@ export const BlockStreamingCoalesceSchema = z
     maxChars: z.number().int().positive().optional(),
     idleMs: z.number().int().nonnegative().optional(),
   })
-  .strict();
+  ;
 
 export const BlockStreamingChunkSchema = z
   .object({
@@ -144,7 +144,7 @@ export const BlockStreamingChunkSchema = z
       .union([z.literal("paragraph"), z.literal("newline"), z.literal("sentence")])
       .optional(),
   })
-  .strict();
+  ;
 
 export const MarkdownTableModeSchema = z.enum(["off", "bullets", "code"]);
 
@@ -152,7 +152,7 @@ export const MarkdownConfigSchema = z
   .object({
     tables: MarkdownTableModeSchema.optional(),
   })
-  .strict()
+  
   .optional();
 
 export const TtsProviderSchema = z.enum(["elevenlabs", "openai", "edge"]);
@@ -176,7 +176,7 @@ export const TtsConfigSchema = z
         allowNormalization: z.boolean().optional(),
         allowSeed: z.boolean().optional(),
       })
-      .strict()
+      
       .optional(),
     elevenlabs: z
       .object({
@@ -195,10 +195,10 @@ export const TtsConfigSchema = z
             useSpeakerBoost: z.boolean().optional(),
             speed: z.number().min(0.5).max(2).optional(),
           })
-          .strict()
+          
           .optional(),
       })
-      .strict()
+      
       .optional(),
     openai: z
       .object({
@@ -206,7 +206,7 @@ export const TtsConfigSchema = z
         model: z.string().optional(),
         voice: z.string().optional(),
       })
-      .strict()
+      
       .optional(),
     edge: z
       .object({
@@ -221,13 +221,13 @@ export const TtsConfigSchema = z
         proxy: z.string().optional(),
         timeoutMs: z.number().int().min(1000).max(120000).optional(),
       })
-      .strict()
+      
       .optional(),
     prefsPath: z.string().optional(),
     maxTextLength: z.number().int().min(1).optional(),
     timeoutMs: z.number().int().min(1000).max(120000).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const HumanDelaySchema = z
@@ -236,7 +236,7 @@ export const HumanDelaySchema = z
     minMs: z.number().int().nonnegative().optional(),
     maxMs: z.number().int().nonnegative().optional(),
   })
-  .strict();
+  ;
 
 export const CliBackendSchema = z
   .object({
@@ -266,7 +266,7 @@ export const CliBackendSchema = z
     imageMode: z.union([z.literal("repeat"), z.literal("list")]).optional(),
     serialize: z.boolean().optional(),
   })
-  .strict();
+  ;
 
 export const normalizeAllowFrom = (values?: Array<string | number>): string[] =>
   (values ?? []).map((v) => String(v).trim()).filter(Boolean);
@@ -301,7 +301,7 @@ export const RetryConfigSchema = z
     maxDelayMs: z.number().int().min(0).optional(),
     jitter: z.number().min(0).max(1).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const QueueModeBySurfaceSchema = z
@@ -316,7 +316,7 @@ export const QueueModeBySurfaceSchema = z
     msteams: QueueModeSchema.optional(),
     webchat: QueueModeSchema.optional(),
   })
-  .strict()
+  
   .optional();
 
 export const DebounceMsBySurfaceSchema = z
@@ -332,7 +332,7 @@ export const QueueSchema = z
     cap: z.number().int().positive().optional(),
     drop: QueueDropSchema.optional(),
   })
-  .strict()
+  
   .optional();
 
 export const InboundDebounceSchema = z
@@ -340,7 +340,7 @@ export const InboundDebounceSchema = z
     debounceMs: z.number().int().nonnegative().optional(),
     byChannel: DebounceMsBySurfaceSchema,
   })
-  .strict()
+  
   .optional();
 
 export const TranscribeAudioSchema = z
@@ -357,7 +357,7 @@ export const TranscribeAudioSchema = z
     }),
     timeoutSeconds: z.number().int().positive().optional(),
   })
-  .strict()
+  
   .optional();
 
 export const HexColorSchema = z.string().regex(/^#?[0-9a-fA-F]{6}$/, "expected hex color (RRGGBB)");
@@ -382,14 +382,14 @@ export const MediaUnderstandingScopeSchema = z
                   .optional(),
                 keyPrefix: z.string().optional(),
               })
-              .strict()
+              
               .optional(),
           })
-          .strict(),
+          ,
       )
       .optional(),
   })
-  .strict()
+  
   .optional();
 
 export const MediaUnderstandingCapabilitiesSchema = z
@@ -404,7 +404,7 @@ export const MediaUnderstandingAttachmentsSchema = z
       .union([z.literal("first"), z.literal("last"), z.literal("path"), z.literal("url")])
       .optional(),
   })
-  .strict()
+  
   .optional();
 
 const DeepgramAudioSchema = z
@@ -413,7 +413,7 @@ const DeepgramAudioSchema = z
     punctuate: z.boolean().optional(),
     smartFormat: z.boolean().optional(),
   })
-  .strict()
+  
   .optional();
 
 const ProviderOptionValueSchema = z.union([z.string(), z.number(), z.boolean()]);
@@ -441,7 +441,7 @@ export const MediaUnderstandingModelSchema = z
     profile: z.string().optional(),
     preferredProfile: z.string().optional(),
   })
-  .strict()
+  
   .optional();
 
 export const ToolsMediaUnderstandingSchema = z
@@ -460,7 +460,7 @@ export const ToolsMediaUnderstandingSchema = z
     attachments: MediaUnderstandingAttachmentsSchema,
     models: z.array(MediaUnderstandingModelSchema).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const ToolsMediaSchema = z
@@ -471,7 +471,7 @@ export const ToolsMediaSchema = z
     audio: ToolsMediaUnderstandingSchema.optional(),
     video: ToolsMediaUnderstandingSchema.optional(),
   })
-  .strict()
+  
   .optional();
 
 export const LinkModelSchema = z
@@ -481,7 +481,7 @@ export const LinkModelSchema = z
     args: z.array(z.string()).optional(),
     timeoutSeconds: z.number().int().positive().optional(),
   })
-  .strict();
+  ;
 
 export const ToolsLinksSchema = z
   .object({
@@ -491,7 +491,7 @@ export const ToolsLinksSchema = z
     timeoutSeconds: z.number().int().positive().optional(),
     models: z.array(LinkModelSchema).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const NativeCommandsSettingSchema = z.union([z.boolean(), z.literal("auto")]);
@@ -501,5 +501,5 @@ export const ProviderCommandsSchema = z
     native: NativeCommandsSettingSchema.optional(),
     nativeSkills: NativeCommandsSettingSchema.optional(),
   })
-  .strict()
+  
   .optional();

@@ -147,7 +147,7 @@ export async function startWebLoginWithQr(
     () => {
       rejectQr?.(new Error("Timed out waiting for WhatsApp QR"));
     },
-    Math.max(opts.timeoutMs ?? 30_000, 5000),
+    Math.max(opts.timeoutMs ?? 60_000, 5000),
   );
 
   let sock: WaSocket;

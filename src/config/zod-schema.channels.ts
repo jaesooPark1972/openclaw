@@ -6,5 +6,5 @@ export const ChannelHeartbeatVisibilitySchema = z
     showAlerts: z.boolean().optional(),
     useIndicator: z.boolean().optional(),
   })
-  .strict()
+  
   .optional();

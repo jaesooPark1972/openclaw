@@ -7,7 +7,7 @@ const ExecApprovalForwardTargetSchema = z
     accountId: z.string().optional(),
     threadId: z.union([z.string(), z.number()]).optional(),
   })
-  .strict();
+  ;
 
 const ExecApprovalForwardingSchema = z
   .object({
@@ -17,12 +17,12 @@ const ExecApprovalForwardingSchema = z
     sessionFilter: z.array(z.string()).optional(),
     targets: z.array(ExecApprovalForwardTargetSchema).optional(),
   })
-  .strict()
+  
   .optional();
 
 export const ApprovalsSchema = z
   .object({
     exec: ExecApprovalForwardingSchema,
   })
-  .strict()
+  
   .optional();

@@ -1,0 +1,20 @@
+{
+    "name": "@openclaw/bio-audio-engine",
+    "version": "0.1.0",
+    "description": "High-Performance Bio-Acoustic Audio Processing Engine",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "scripts": {
+        "install": "cmake-js compile",
+        "build": "cmake-js compile",
+        "test": "node test.js"
+    },
+    "dependencies": {
+        "bindings": "^1.5.0",
+        "cmake-js": "^7.3.0",
+        "node-addon-api": "^7.1.0"
+    },
+    "engines": {
+        "node": ">= 18"
+    }
+}

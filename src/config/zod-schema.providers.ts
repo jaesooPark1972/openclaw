@@ -24,7 +24,7 @@ export const ChannelsSchema = z
         groupPolicy: GroupPolicySchema.optional(),
         heartbeat: ChannelHeartbeatVisibilitySchema,
       })
-      .strict()
+      
       .optional(),
     whatsapp: WhatsAppConfigSchema.optional(),
     telegram: TelegramConfigSchema.optional(),
