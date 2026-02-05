@@ -16,7 +16,7 @@
 
 ---
 
-# 🦞 OpenClaw (Antigravity System) 한국어 매뉴얼
+# 🦞 OpenClaw 한국어 매뉴얼
 
 **Updated:** 2026.02.05
 **Author:** Antigravity AI
