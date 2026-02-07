@@ -1,0 +1,10 @@
+{
+  "tts": {
+    "auto": "always",
+    "provider": "edge"
+  },
+  "edge": {
+    "voice": "ko-KR-SunHiNeural",
+    "lang": "ko-KR"
+  }
+}

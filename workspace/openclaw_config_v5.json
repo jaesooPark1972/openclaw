@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.3-1",
+    "lastTouchedAt": "2026-02-07T06:15:41.843Z"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.1",
+        "fallbacks": [
+          "openrouter/anthropic/claude-sonnet-4",
+          "google/gemini-2.5-pro",
+          "google/gemini-2.0-flash",
+          "deepseek/deepseek-chat",
+          "groq/llama-3.3-70b-versatile",
+          "cerebras/gpt-oss-120b",
+          "moonshot/moonshot-v1-128k",
+          "ollama/deepseek-r1:8b",
+          "ollama/qwen2.5-coder:7b",
+          "ollama/exaone3.5:latest"
+        ]
+      },
+      "workspace": "D:\\OpenClaw\\workspace",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "tools": {
+          "allow": [
+            "*"
+          ]
+        }
+      },
+      {
+        "id": "musk-architect",
+        "tools": {
+          "allow": [
+            "*"
+          ]
+        }
+      }
+    ]
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "open",
+      "botToken": "8249306655:AAE6snmV8AR63O-4-sFind-gSx8CjhjgFuk",
+      "groups": {
+        "*": {
+          "enabled": true
+        }
+      },
+      "allowFrom": [
+        "*"
+      ],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "c0b4dc439175325c5ee573f71c05e0483126adf20b67f2a8"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions",
+    "tts": {
+      "provider": "edge",
+      "maxTextLength": 4096,
+      "edge": {
+        "enabled": true,
+        "voice": "ko-KR-SunHiNeural",
+        "lang": "ko-KR"
+      }
+    }
+  }
+}
