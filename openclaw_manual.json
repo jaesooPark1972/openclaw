@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "title": "OpenClaw (Antigravity System) User Manual",
+    "version": "2026.02.03",
+    "author": "Jaesoo Park",
+    "lastUpdated": "2026-02-03T17:27:00+09:00"
+  },
+  "system": {
+    "startup": {
+      "step1": {
+        "action": "Open PowerShell as Administrator",
+        "command": "cd d:\\OpenClaw"
+      },
+      "step2": {
+        "action": "Start Gateway",
+        "command": "$env:OPENCLAW_NO_RESPAWN=\"1\"; node dist/entry.js gateway --verbose --port 18789",
+        "successIndicator": "Listening on ws://127.0.0.1:18789"
+      }
+    },
+    "configuration": {
+      "path": "d:\\OpenClaw",
+      "configFile": "C:\\Users\\PC\\.openclaw\\openclaw.json",
+      "envFile": "C:\\Users\\PC\\.openclaw\\.env"
+    }
+  },
+  "features": {
+    "webDashboard": {
+      "url": "http://localhost:18789",
+      "menus": [
+        {
+          "name": "Chat",
+          "description": "Interaction with AI Agent"
+        },
+        {
+          "name": "Channels",
+          "description": "Manage Telegram Bot Connections"
+        },
+        {
+          "name": "Config",
+          "description": "System & Model Settings"
+        },
+        {
+          "name": "Skills",
+          "description": "Manage AI Tools & Capabilities"
+        }
+      ]
+    },
+    "telegramBot": {
+      "botName": "@park_vivace_bot",
+      "accessPolicy": "Open (Public access allowed)",
+      "commands": [
+        {
+          "command": "/start",
+          "description": "Wake up the bot"
+        },
+        {
+          "command": "/restart",
+          "description": "Restart bot service"
+        },
+        {
+          "command": "/clear",
+          "description": "Clear conversation history"
+        }
+      ]
+    }
+  },
+  "capabilities": {
+    "aiModel": {
+      "primary": "google/gemini-2.0-flash",
+      "features": ["1M Token Context", "High Reasoning", "Multi-turn Conversation"],
+      "fallback": ["groq/llama-3.3-70b-versatile", "deepseek/deepseek-chat"]
+    },
+    "webSearch": {
+      "provider": "Brave Search API",
+      "enabled": true,
+      "features": ["Real-time internet access", "Latest news retrieval"]
+    },
+    "pcControl": {
+      "enabled": true,
+      "features": ["File System Access", "Code Execution", "Browser Automation"]
+    }
+  },
+  "troubleshooting": {
+    "commonIssues": [
+      {
+        "symptom": "Telegram bot not responding",
+        "solution": "Check if PowerShell terminal is open. If closed, restart following startup steps."
+      },
+      {
+        "symptom": "Repetitive or weird responses",
+        "solution": "Type /clear in Telegram or restart the gateway."
+      },
+      {
+        "symptom": "Context overflow error",
+        "solution": "Already fixed by switching to Gemini 2.0 (1M token limit)."
+      }
+    ]
+  }
+}
