@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.openclaw/
+workspace/lancedb/
+e:/vivace_music/ACE-STEP-1.5/gradio_outputs/
+data/temp/
+data/logs/
+*.mp3
+*.wav
+*.mp4
+*.flac
+*.m4a
+*.ogg

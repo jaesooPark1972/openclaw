@@ -1,0 +1,14 @@
+D:\OpenClaw\workspace\openclaw_rust_db\target\debug\deps\serde-6ab05ff1df5ff62c.d: C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs D:\OpenClaw\workspace\openclaw_rust_db\target\debug\build\serde-2debad09e2a4bb94\out/private.rs
+
+D:\OpenClaw\workspace\openclaw_rust_db\target\debug\deps\libserde-6ab05ff1df5ff62c.rlib: C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs D:\OpenClaw\workspace\openclaw_rust_db\target\debug\build\serde-2debad09e2a4bb94\out/private.rs
+
+D:\OpenClaw\workspace\openclaw_rust_db\target\debug\deps\libserde-6ab05ff1df5ff62c.rmeta: C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs D:\OpenClaw\workspace\openclaw_rust_db\target\debug\build\serde-2debad09e2a4bb94\out/private.rs
+
+C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs:
+C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs:
+C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs:
+C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs:
+C:\Users\JayPark1004\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs:
+D:\OpenClaw\workspace\openclaw_rust_db\target\debug\build\serde-2debad09e2a4bb94\out/private.rs:
+
+# env-dep:OUT_DIR=D:\\OpenClaw\\workspace\\openclaw_rust_db\\target\\debug\\build\\serde-2debad09e2a4bb94\\out
