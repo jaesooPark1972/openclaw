@@ -55,6 +55,7 @@ OpenClaw는 다음 아키텍처로 동작합니다:
 ### 🧠 Nano-Mode & Master Hub
 - **Nano-Mode**: 초경량 응답 경로를 통해 일상적인 명령에 0.5초 이내 반응
 - **GPU Monitoring**: 실시간 VRAM 점유율 및 하드웨어 상태 체크 (Nvidia-SMI 연동)
+- **K-Voice Optimization**: 한국어 전용 Edge TTS 최적화 및 **JiMinNeural** (밝고 귀여운 목소리) 기본 적용
 - **Unified Master API**: 모든 창의적 도구(VIVACE, Video)와 시스템 지능을 하나의 허브로 통합
 
 ### 🤖 다중 AI API 지원
