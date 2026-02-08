@@ -59,13 +59,24 @@ except ImportError:
 @mcp.tool()
 async def delegate_to_antigravity(instruction: str, context_files: Optional[List[str]] = None) -> str:
     """
-    [Strategic] Delegates a high-level architectural or creative task to Antigravity.
+    [Strategic] Delegates a high-level architectural or creative task to Antigravity via the Master API.
     Use this when you need: System Design, Complex Reasoning, Story Creation, or Master Planning.
     """
-    # This is a meta-tool. In a real multi-agent system, this would trigger the 'musk-architect' agent.
-    # For now, it logs the instruction and prepares the context for the Supervisor.
-    log_entry = f"ANTIGRAVITY_TASK: {instruction}\nCONTEXT: {context_files}"
-    return f"✅ Instruction Delegated to Antigravity Core.\nExecuting with Architect Persona...\n(Log: {log_entry})"
+    url = "http://localhost:8080/api/antigravity/consult"
+    try:
+        payload = {
+            "instruction": instruction,
+            "context": {"files": context_files} if context_files else None
+        }
+        resp = requests.post(url, json=payload, timeout=60)
+        if resp.status_code == 200:
+            result = resp.json()
+            return f"🏹 [Antigravity Core Response]\n\n{result.get('reply', 'No reply received.')}"
+        else:
+            return f"❌ Antigravity API Error: {resp.text}"
+    except Exception as e:
+        # Fallback logic if API is down
+        return f"⚠️ API Connection Failed. Ensure Master API (port 8080) is running.\nError: {str(e)}"
 
 @mcp.tool()
 async def system_cmd(command: str, cwd: str = "D:/OpenClaw") -> str:

@@ -12,3 +12,5 @@ data/logs/
 *.flac
 *.m4a
 *.ogg
+node_modules
+node_modules

@@ -1,0 +1,83 @@
+import "./paths-scjhy7N2.js";
+import "./agent-scope-BbT4OG2N.js";
+import { E as danger, R as theme, c as defaultRuntime } from "./subsystem-CAq3uyo7.js";
+import "./utils-CKSrBNwq.js";
+import "./exec-HEWTMJ7j.js";
+import "./model-selection-DOOBF_0m.js";
+import "./github-copilot-token-CnxakiSC.js";
+import "./boolean-Wzu0-e0P.js";
+import "./env-l7QVNj6j.js";
+import "./config-Qw6Mvhjh.js";
+import "./manifest-registry-D2Yntqcb.js";
+import "./message-channel-B8sq-ATS.js";
+import "./client-21XXC0l9.js";
+import "./call-CksrEJ-J.js";
+import { t as formatDocsLink } from "./links-DwjRqxgR.js";
+import "./progress-CvaSPjS9.js";
+import { n as callGatewayFromCli, t as addGatewayClientOptions } from "./gateway-rpc-CX0Sb3_p.js";
+
+//#region src/cli/system-cli.ts
+const normalizeWakeMode = (raw) => {
+	const mode = typeof raw === "string" ? raw.trim() : "";
+	if (!mode) return "next-heartbeat";
+	if (mode === "now" || mode === "next-heartbeat") return mode;
+	throw new Error("--mode must be now or next-heartbeat");
+};
+function registerSystemCli(program) {
+	const system = program.command("system").description("System tools (events, heartbeat, presence)").addHelpText("after", () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/system", "docs.openclaw.ai/cli/system")}\n`);
+	addGatewayClientOptions(system.command("event").description("Enqueue a system event and optionally trigger a heartbeat").requiredOption("--text <text>", "System event text").option("--mode <mode>", "Wake mode (now|next-heartbeat)", "next-heartbeat").option("--json", "Output JSON", false)).action(async (opts) => {
+		try {
+			const text = typeof opts.text === "string" ? opts.text.trim() : "";
+			if (!text) throw new Error("--text is required");
+			const result = await callGatewayFromCli("wake", opts, {
+				mode: normalizeWakeMode(opts.mode),
+				text
+			}, { expectFinal: false });
+			if (opts.json) defaultRuntime.log(JSON.stringify(result, null, 2));
+			else defaultRuntime.log("ok");
+		} catch (err) {
+			defaultRuntime.error(danger(String(err)));
+			defaultRuntime.exit(1);
+		}
+	});
+	const heartbeat = system.command("heartbeat").description("Heartbeat controls");
+	addGatewayClientOptions(heartbeat.command("last").description("Show the last heartbeat event").option("--json", "Output JSON", false)).action(async (opts) => {
+		try {
+			const result = await callGatewayFromCli("last-heartbeat", opts, void 0, { expectFinal: false });
+			defaultRuntime.log(JSON.stringify(result, null, 2));
+		} catch (err) {
+			defaultRuntime.error(danger(String(err)));
+			defaultRuntime.exit(1);
+		}
+	});
+	addGatewayClientOptions(heartbeat.command("enable").description("Enable heartbeats").option("--json", "Output JSON", false)).action(async (opts) => {
+		try {
+			const result = await callGatewayFromCli("set-heartbeats", opts, { enabled: true }, { expectFinal: false });
+			defaultRuntime.log(JSON.stringify(result, null, 2));
+		} catch (err) {
+			defaultRuntime.error(danger(String(err)));
+			defaultRuntime.exit(1);
+		}
+	});
+	addGatewayClientOptions(heartbeat.command("disable").description("Disable heartbeats").option("--json", "Output JSON", false)).action(async (opts) => {
+		try {
+			const result = await callGatewayFromCli("set-heartbeats", opts, { enabled: false }, { expectFinal: false });
+			defaultRuntime.log(JSON.stringify(result, null, 2));
+		} catch (err) {
+			defaultRuntime.error(danger(String(err)));
+			defaultRuntime.exit(1);
+		}
+	});
+	addGatewayClientOptions(system.command("presence").description("List system presence entries").option("--json", "Output JSON", false)).action(async (opts) => {
+		try {
+			const result = await callGatewayFromCli("system-presence", opts, void 0, { expectFinal: false });
+			defaultRuntime.log(JSON.stringify(result, null, 2));
+		} catch (err) {
+			defaultRuntime.error(danger(String(err)));
+			defaultRuntime.exit(1);
+		}
+	});
+}
+
+//#endregion
+export { registerSystemCli };

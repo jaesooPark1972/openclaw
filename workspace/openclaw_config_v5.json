@@ -1,13 +1,15 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.2.3-1",
-    "lastTouchedAt": "2026-02-07T06:15:41.843Z"
+    "lastTouchedVersion": "2026.2.8-1",
+    "lastTouchedAt": "2026-02-08T18:44:00.000Z",
+    "masterEnvPath": "D:\\OpenClaw\\.env"
   },
   "agents": {
     "defaults": {
       "model": {
         "primary": "openai-codex/gpt-5.1",
         "fallbacks": [
+          "openrouter/pony-alpha",
           "openrouter/anthropic/claude-sonnet-4",
           "google/gemini-2.5-pro",
           "google/gemini-2.0-flash",
@@ -24,30 +26,73 @@
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
-      }
+      },
+      "execution": {
+        "autoExecute": true,
+        "confirmBeforeExecution": [],
+        "shellEnabled": true,
+        "pythonPath": "F:\\Vivace\\venv\\Scripts\\python.exe"
+      },
+      "skills": [
+        "D:\\OpenClaw\\workspace\\skills\\vivace_control.py",
+        "D:\\OpenClaw\\workspace\\skills\\nexus_api.py",
+        "D:\\OpenClaw\\workspace\\mcp_servers\\glm_ocr_mcp.py",
+        "D:\\OpenClaw\\workspace\\skills\\stt_whisper.py",
+        "D:\\OpenClaw\\workspace\\skills\\tts_reply.py"
+      ]
     },
     "list": [
       {
         "id": "main",
+        "name": "Nexus Orchestrator",
+        "description": "Personal Orchestration Assistant - Full autonomous execution",
         "tools": {
           "allow": [
             "*"
-          ]
+          ],
+          "deny": []
+        },
+        "execution": {
+          "autoExecute": true,
+          "confirmBeforeExecution": []
         }
       },
       {
         "id": "musk-architect",
+        "name": "Musk Architect",
+        "description": "High-level system architecture and decision making - Full access",
         "tools": {
           "allow": [
             "*"
-          ]
+          ],
+          "deny": []
+        },
+        "execution": {
+          "autoExecute": true,
+          "confirmBeforeExecution": []
+        }
+      },
+      {
+        "id": "editorial-agent",
+        "name": "Editorial Agent",
+        "description": "Content generation and editing through VIVACE API - Full access",
+        "tools": {
+          "allow": [
+            "*"
+          ],
+          "deny": []
+        },
+        "execution": {
+          "autoExecute": true,
+          "confirmBeforeExecution": []
         }
       }
     ]
   },
   "commands": {
     "native": "auto",
-    "nativeSkills": "auto"
+    "nativeSkills": "auto",
+    "envSource": "D:\\OpenClaw\\.env"
   },
   "channels": {
     "telegram": {

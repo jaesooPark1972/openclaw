@@ -77,6 +77,16 @@ class VoiceProcessRequest(BaseModel):
     file_path: str
     telegram_chat_id: Optional[str] = None
 
+class ConsultRequest(BaseModel):
+    instruction: str
+    context: Optional[Dict] = None
+
+class PonyChatRequest(BaseModel):
+    user_prompt: str
+    system_prompt: Optional[str] = "You are Pony Alpha, a helpful AI assistant."
+    max_tokens: Optional[int] = 4096
+    temperature: Optional[float] = 0.7
+
 # --- Helpers ---
 
 def get_gpu_stats():
@@ -213,6 +223,72 @@ async def process_voice(req: VoiceProcessRequest):
 @app.get("/api/logs")
 async def get_logs(): return list(terminal_logs)
 
+@app.post("/api/antigravity/consult")
+async def consult_antigravity(req: ConsultRequest):
+    """
+    [Antigravity Bridge] Direct consultation endpoint for complex architectural/creative tasks.
+    Delegates the instruction to the OpenClaw agent and returns the response.
+    """
+    terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [CONSULT] Request: {req.instruction[:50]}...")
+    
+    # Execute via the nano-mode agent bridge
+    reply = await call_openclaw_nano(req.instruction)
+    
+    if not reply or "Error:" in reply:
+        terminal_logs.append(f"[ERROR] Consult Failed: {reply}")
+    else:
+        terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [CONSULT] Reply received.")
+        
+    return {
+        "instruction": req.instruction,
+        "reply": reply,
+        "timestamp": datetime.now().isoformat()
+    }
+
+@app.post("/api/chat/pony")
+async def chat_pony(req: PonyChatRequest):
+    """
+    [Pony Alpha API] Direct Interface to OpenRouter Pony Alpha Model.
+    """
+    or_key = os.getenv("OPENROUTER_API_KEY")
+    if not or_key: or_key = os.getenv("OPENAI_API_KEY") # Fallback just in case, but prefer specific key
+    
+    if not or_key:
+        raise HTTPException(status_code=500, detail="OPENROUTER_API_KEY not found in environment")
+        
+    try:
+        # Direct OpenRouter client
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=or_key,
+        )
+        
+        start_t = time.time()
+        completion = client.chat.completions.create(
+            model="openrouter/pony-alpha",
+            messages=[
+                {"role": "system", "content": req.system_prompt},
+                {"role": "user", "content": req.user_prompt},
+            ],
+            max_tokens=req.max_tokens,
+            temperature=req.temperature,
+        )
+        duration = time.time() - start_t
+        reply = completion.choices[0].message.content
+        
+        terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [PONY] Reply generated in {duration:.2f}s")
+        return {
+            "model": "openrouter/pony-alpha",
+            "content": reply, 
+            "usage": completion.usage.model_dump() if completion.usage else {},
+            "latency": duration
+        }
+    except Exception as e:
+        curr_err = str(e)
+        terminal_logs.append(f"[ERROR] Pony Alpha: {curr_err}")
+        # Return error JSON rather than 500 to keep client alive
+        return {"error": curr_err}
+
 @app.post("/api/vivace/generate")
 async def generate_music(req: MusicGenRequest):
     try:
@@ -252,4 +328,11 @@ if os.path.exists(DIST_PATH): app.mount("/", StaticFiles(directory=DIST_PATH, ht
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    import uvicorn
+    import argparse
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=8080)
+    args, _ = parser.parse_known_args()
+    
+    uvicorn.run(app, host="0.0.0.0", port=args.port)

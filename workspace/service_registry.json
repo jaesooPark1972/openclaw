@@ -1,0 +1,10 @@
+[
+    {
+        "id": "main",
+        "status": "active",
+        "port": 8082,
+        "pid": "AUTO",
+        "description": "Nexus API (v5.0 Turbo Nano)",
+        "log_path": "d:\\OpenClaw\\workspace\\logs\\nexus_api.log"
+    }
+]

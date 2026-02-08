@@ -1,25 +1,31 @@
 use sqlx::postgres::PgPoolOptions;
-use dotenvy::dotenv;
+use dotenvy;
 use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    dotenv().ok();
+    // Load from Master .env (D:\OpenClaw\.env)
+    // This must be loaded before accessing env::var()
+    let env_path = std::path::Path::new(r"D:\OpenClaw\.env");
+    dotenvy::from_filename(env_path).ok();
 
-    // 1. Connection String (D:/OpenClaw/.env 정보를 활용)
-    // 텔레그램 대화 내역이나 프로젝트 메타데이터를 저장할 용도라고 가정
-    let database_url = "postgres://postgres:2903@localhost:5432/openclaw_db";
+    println!("🦞 [OpenCLAW] Master .env loaded from: {}", env_path.display());
 
-    println!("🌐 [Rust-DB] Connecting to openclaw_db (Stored on Google Drive)...");
+    // Get DATABASE_URL from Master .env
+    let database_url = env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://postgres:2903@localhost:5432/openclaw_db".to_string());
+
+    println!("🌐 [Rust-DB] Connecting to PostgreSQL...");
+    println!("📍 Database URL: {}", database_url);
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(database_url)
+        .connect(&database_url)
         .await?;
 
     println!("✅ [Rust-DB] Connection Successful!");
 
-    // 2. 초기 테이블 생성 (예: 시스템 로그 또는 에이전트 상태)
+    // Initialize the table
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS agent_memory (
@@ -33,21 +39,29 @@ async fn main() -> Result<(), anyhow::Error> {
     .execute(&pool)
     .await?;
 
-    println!("📊 [Rust-DB] 'agent_memory' table initialized.");
+    println!("📊 [Rust-DB] 'agent_memory' table ready.");
 
-    // 3. 테스트 데이터 삽입
-    sqlx::query(
-        "INSERT INTO agent_memory (agent_name, content) VALUES ($1, $2)"
-    )
-    .bind("jayhomebot")
-    .bind("System successfully migrated to Google Drive backed PostgreSQL.")
-    .execute(&pool)
-    .await?;
+    // Insert test data if table was newly created
+    let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM agent_memory")
+        .fetch_one(&pool)
+        .await?;
+
+    if count.0 == 0 {
+        println!("📝 [Rust-DB] Inserting initial record...");
+        sqlx::query(
+            "INSERT INTO agent_memory (agent_name, content) VALUES ($1, $2)"
+        )
+        .bind("jayhomebot")
+        .bind("System initialized with Master .env configuration")
+        .execute(&pool)
+        .await?;
+    }
 
     let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM agent_memory")
         .fetch_one(&pool)
         .await?;
 
+    println!("✅ [Rust-DB] Connection Successful!");
     println!("📈 [Rust-DB] Total memories stored: {}", row.0);
 
     Ok(())

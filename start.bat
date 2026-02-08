@@ -10,7 +10,7 @@ cd /d "D:\OpenClaw"
 echo [2/3] Setting environment variables...
 set OPENCLAW_NO_RESPAWN=1
 
-echo [3/3] Launching Gateway on port 18789...
+echo [3/3] Launching Gateway via NPM...
 echo.
 echo * Web Dashboard: http://localhost:18789
 echo * Telegram Bot: @park_vivace_bot
@@ -18,6 +18,7 @@ echo.
 echo Press Ctrl+C to stop the server.
 echo.
 
-node dist/entry.js gateway --verbose --port 18789
+rem Use npm start instead of direct dist file execution (since dist might not exist)
+npm run start -- gateway --verbose --port 18789
 
 pause

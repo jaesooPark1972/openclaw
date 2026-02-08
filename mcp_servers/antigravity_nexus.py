@@ -180,13 +180,14 @@ async def speak_to_telegram(text: str) -> str:
 # 🔧 Service Control (Maintained from v3.1)
 # -------------------------------------------------------------------------
 @mcp.tool()
-async def vivace_generate_music(genre_prompt: str, lyrics: str = "[Instrumental]") -> str:
+async def vivace_generate_music(genre_prompt: str, lyrics: str = "[Instrumental]", title: str = "") -> str:
     """
     [VIVACE] Generates high-fidelity AI music using ACE-STEP 1.5. 
     The resulting file will be sent to your Telegram once finished.
     Args:
         genre_prompt: Genre and style (e.g., 'heavy metal', 'kpop girl group')
         lyrics: Lyrics or structural tags (e.g., '[Chorus] I love AI')
+        title: Optional title for the song file.
     """
     from dotenv import load_dotenv
     load_dotenv(r"D:/OpenClaw/.env")
@@ -194,10 +195,15 @@ async def vivace_generate_music(genre_prompt: str, lyrics: str = "[Instrumental]
     
     url = "http://localhost:8080/api/vivace/generate"
     try:
-        payload = {"prompt": genre_prompt, "lyrics": lyrics, "telegram_chat_id": chat_id}
+        payload = {
+            "title": title,
+            "prompt": genre_prompt, 
+            "lyrics": lyrics, 
+            "telegram_chat_id": chat_id
+        }
         resp = requests.post(url, json=payload, timeout=5)
         if resp.status_code == 200:
-            return f"🎹 VIVACE Music Generation Started: {genre_prompt}\nFile will be sent to Telegram (ID: {chat_id}) when done."
+            return f"🎹 VIVACE Music Generation Started: {title or genre_prompt}\nFile will be sent to Telegram (ID: {chat_id}) when done."
         else:
             return f"❌ VIVACE API Error: {resp.text}"
     except Exception as e:
@@ -225,6 +231,68 @@ async def vivace_generate_video(prompt: str) -> str:
             return f"❌ VIVACE Video API Error: {resp.text}"
     except Exception as e:
         return f"❌ Connection Error: Ensure VIVACE Nexus API is running on port 8080. ({str(e)})"
+
+@mcp.tool()
+async def cloud_sync_homepage(local_file_path: str, remote_path: str = "/var/www/html/") -> str:
+    """
+    [CLOUD] Syncs a local file to the AWS Homepage server (13.209.70.102).
+    Use this to update the website or upload new assets.
+    """
+    url = "http://localhost:8080/api/cloud/sync"
+    try:
+        payload = {"local_file": local_file_path, "remote_path": remote_path}
+        resp = requests.post(url, json=payload, timeout=10)
+        return f"☁️ Cloud Sync Result: {resp.json()}"
+    except Exception as e:
+        return f"❌ Cloud Sync Error: {str(e)}"
+
+@mcp.tool()
+async def cloud_exec_command(command: str) -> str:
+    """
+    [CLOUD] Executes a terminal command directly on the AWS Homepage server.
+    Use this for restarting services (Nginx), checking logs, or updating permissions.
+    """
+    url = "http://localhost:8080/api/cloud/exec"
+    try:
+        payload = {"command": command}
+        resp = requests.post(url, json=payload, timeout=10)
+        return f"🖥️ Remote CMD Output: {resp.json()}"
+    except Exception as e:
+        return f"❌ Remote CMD Error: {str(e)}"
+
+@mcp.tool()
+async def homepage_explore_files() -> str:
+    """[HOMEPAGE] Lists all source files in the local sky_group project."""
+    url = "http://localhost:8080/api/homepage/files"
+    try:
+        resp = requests.get(url, timeout=5)
+        return f"📂 Homepage Files: {resp.json()}"
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
+
+@mcp.tool()
+async def homepage_edit_file(file_rel_path: str, new_content: str) -> str:
+    """[HOMEPAGE] Edits a specific file in the sky_group project."""
+    url = "http://localhost:8080/api/homepage/update"
+    try:
+        payload = {"path": file_rel_path, "content": new_content}
+        resp = requests.post(url, json=payload, timeout=5)
+        return f"📝 Edit Result: {resp.json()}"
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
+
+@mcp.tool()
+async def homepage_deploy_all() -> str:
+    """[HOMEPAGE] Syncs the entire local sky_group folder to the AWS server (Full Deployment)."""
+    # Using pscp recursively via god_execute or special endpoint
+    url = "http://localhost:8080/api/cloud/sync"
+    try:
+        # We specify the root folder to sync
+        payload = {"local_file": r"E:\homepage\sky_group_Ver1.0\*", "remote_path": "/var/www/html/"}
+        resp = requests.post(url, json=payload, timeout=60)
+        return f"🚀 Full Deployment Started: {resp.json()}"
+    except Exception as e:
+        return f"❌ Deployment Error: {str(e)}"
 
 @mcp.tool()
 async def nexus_god_execute(command: str, domain: str = "system") -> str:
