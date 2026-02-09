@@ -21,23 +21,23 @@ def main():
         print(f"❌ Error: File not found: {audio_path}", file=sys.stderr)
         sys.exit(1)
         
-    # 3. API 키 확인 (학원 방식 - OpenAI 우선)
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if openai_key:
-        api_key = openai_key.strip()
-        base_url = None # Default OpenAI
-        model = "whisper-1"
-        provider = "OpenAI"
+    # 3. API 키 확인 (비용 절감 우선 - Groq 우선)
+    groq_key = os.getenv("GROQ_API_KEY")
+    if groq_key:
+        api_key = groq_key.strip()
+        base_url = "https://api.groq.com/openai/v1"
+        model = "whisper-large-v3"
+        provider = "Groq"
     else:
-        # Fallback to Groq
-        api_key = os.getenv("GROQ_API_KEY")
-        if api_key:
-            api_key = api_key.strip()
-            base_url = "https://api.groq.com/openai/v1"
-            model = "whisper-large-v3"
-            provider = "Groq"
+        # Fallback to OpenAI (Paid)
+        openai_key = os.getenv("OPENAI_API_KEY")
+        if openai_key:
+            api_key = openai_key.strip()
+            base_url = None
+            model = "whisper-1"
+            provider = "OpenAI"
         else:
-            print("❌ Error: No API Key (OPENAI or GROQ) found in .env", file=sys.stderr)
+            print("❌ Error: No API Key (GROQ or OPENAI) found in .env", file=sys.stderr)
             sys.exit(1)
 
     # 4. 클라이언트 초기화

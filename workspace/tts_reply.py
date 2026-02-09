@@ -53,22 +53,25 @@ def main():
 
     success = False
     
-    # 1. OpenAI TTS 시도
+    # 1. Edge-TTS 시도 (무료 우선)
     try:
-        generate_openai_tts(text, filepath)
+        import asyncio
+        asyncio.run(generate_edge_tts(text, filepath))
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
             success = True
+            print(f"✅ Edge-TTS Success: {filepath}", file=sys.stderr)
     except Exception as e:
-        print(f"⚠️ [OpenAI TTS Fail] {e}", file=sys.stderr)
+        print(f"⚠️ [Edge-TTS Fail] {e}", file=sys.stderr)
 
-    # 2. 실패 시 Edge-TTS
+    # 2. 실패 시 OpenAI TTS (유료 fallback)
     if not success:
         try:
-            asyncio.run(generate_edge_tts(text, filepath))
+            generate_openai_tts(text, filepath)
             if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
                 success = True
+                print(f"✅ OpenAI TTS Success (Fallback): {filepath}", file=sys.stderr)
         except Exception as e:
-            print(f"⚠️ [Edge-TTS Fail] {e}", file=sys.stderr)
+            print(f"⚠️ [OpenAI TTS Fail] {e}", file=sys.stderr)
 
     if success:
         try: sys.stdout.reconfigure(encoding='utf-8')

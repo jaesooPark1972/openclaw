@@ -121,21 +121,32 @@ def send_to_telegram(chat_id: str, text: str = None, file_path: str = None):
         terminal_logs.append(f"[ERROR] Telegram Delivery Failed: {e}")
 
 async def call_openclaw_nano(text: str):
-    """Nano-Mode: Fast Path for Agent calls"""
-    env = os.environ.copy()
-    env["OPENCLAW_TOKEN"] = OPENCLAW_TOKEN
-    openclaw_cmd = r"C:\Users\JayPark1004\AppData\Roaming\npm\openclaw.cmd"
+    """
+    [Nano-Mode v5] Direct Brain Bypass - Using Cerebras
+    Cerebras offers truly free unlimited inference.
+    """
+    cerebras_key = os.getenv("CEREBRAS_API_KEY", "").strip(" \"'\n\t")
+    if not cerebras_key:
+        return "Error: Missing CEREBRAS_API_KEY"
+
+    client = OpenAI(
+        api_key=cerebras_key,
+        base_url="https://api.cerebras.ai/v1"
+    )
+
     try:
-        proc = subprocess.run([openclaw_cmd, "agent", "--agent", "main", "--message", text], 
-                             capture_output=True, text=True, encoding='utf-8', env=env, shell=True)
-        lines = proc.stdout.splitlines()
-        reply = ""
-        found = False
-        for l in lines:
-            if "◇" in l: found = True; continue
-            if found and l.strip() and "Exit code" not in l: reply += l.strip() + " "
-        return reply.strip() or (lines[-1].strip() if lines else "No response")
-    except Exception as e: return f"Error: {str(e)}"
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b",
+            messages=[
+                {"role": "system", "content": "You are Nexus, the AI Brain of Antigravity system. You help the user with their requests concisely. Answer in Korean."},
+                {"role": "user", "content": text}
+            ],
+            temperature=0.7,
+            max_tokens=1024
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        return f"Error talking to Cerebras: {str(e)}"
 
 # --- API Endpoints ---
 
@@ -248,45 +259,108 @@ async def consult_antigravity(req: ConsultRequest):
 @app.post("/api/chat/pony")
 async def chat_pony(req: PonyChatRequest):
     """
-    [Pony Alpha API] Direct Interface to OpenRouter Pony Alpha Model.
+    [Pony Alpha API] Direct Interface with Reasoning Capabilities.
+    Uses 'requests' to handle custom 'reasoning_details' parameters.
     """
     or_key = os.getenv("OPENROUTER_API_KEY")
-    if not or_key: or_key = os.getenv("OPENAI_API_KEY") # Fallback just in case, but prefer specific key
+    # Fallback to OpenAI key if specific OpenRouter key not found (though OpenRouter key is preferred)
+    if not or_key: or_key = os.getenv("OPENAI_API_KEY")
     
     if not or_key:
         raise HTTPException(status_code=500, detail="OPENROUTER_API_KEY not found in environment")
         
     try:
-        # Direct OpenRouter client
-        client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=or_key,
-        )
-        
         start_t = time.time()
-        completion = client.chat.completions.create(
-            model="openrouter/pony-alpha",
-            messages=[
-                {"role": "system", "content": req.system_prompt},
-                {"role": "user", "content": req.user_prompt},
-            ],
-            max_tokens=req.max_tokens,
-            temperature=req.temperature,
-        )
-        duration = time.time() - start_t
-        reply = completion.choices[0].message.content
         
-        terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [PONY] Reply generated in {duration:.2f}s")
+        headers = {
+            "Authorization": f"Bearer {or_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://github.com/OpenClaw/OpenClaw",
+            "X-Title": "OpenClaw Antigravity"
+        }
+        
+        # 1. First Call (Reasoning Enabled)
+        payload = {
+            "model": "openrouter/pony-alpha",
+            "messages": [
+                {"role": "system", "content": req.system_prompt},
+                {"role": "user", "content": req.user_prompt}
+            ],
+            "reasoning": {"enabled": True}
+        }
+        
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            data=json.dumps(payload),
+            timeout=120
+        )
+        
+        if response.status_code != 200:
+            return {"error": f"OpenRouter API Error: {response.text}"}
+            
+        resp_json = response.json()
+        message = resp_json['choices'][0]['message']
+        content = message.get('content', '')
+        reasoning_details = message.get('reasoning_details')
+        
+        # Log reasoning stats
+        tokens_reasoning = resp_json.get('usage', {}).get('completion_tokens_reasoning', 0)
+        terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [PONY] Reasoning extracted (Tokens: {tokens_reasoning})")
+        
+        # 2. (Optional) Self-Correction Loop / Verification
+        # If specific flag or high temperature is set, we could trigger the 2nd loop. 
+        # For now, we return the reasoning so the Agent can decide.
+        # But if the user specifically requested the "Are you sure?" loop application:
+        
+        # Let's perform the 2nd loop automatically for maximum reliability ("Antigravity Mode")
+        # to ensure the answer is double-checked.
+        
+        msgs_v2 = [
+            {"role": "user", "content": req.user_prompt},
+            {
+                "role": "assistant", 
+                "content": content,
+                "reasoning_details": reasoning_details # KEY: Passing back reasoning
+            },
+            {"role": "user", "content": "Review your reasoning and answer. Are you sure? Think carefully."}
+        ]
+        
+        payload_v2 = {
+            "model": "openrouter/pony-alpha",
+            "messages": msgs_v2,
+            "reasoning": {"enabled": True}
+        }
+        
+        response_v2 = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers, 
+            data=json.dumps(payload_v2),
+            timeout=120
+        )
+        
+        final_content = content
+        final_reasoning = reasoning_details
+        
+        if response_v2.status_code == 200:
+            resp_v2_json = response_v2.json()
+            msg_v2 = resp_v2_json['choices'][0]['message']
+            final_content = msg_v2.get('content')
+            final_reasoning = msg_v2.get('reasoning_details', reasoning_details)
+            terminal_logs.append(f"{time.strftime('[%H:%M:%S]')} [PONY] Self-Correction loop complete.")
+            
+        duration = time.time() - start_t
+        
         return {
             "model": "openrouter/pony-alpha",
-            "content": reply, 
-            "usage": completion.usage.model_dump() if completion.usage else {},
+            "content": final_content,
+            "reasoning_details": final_reasoning, # Return this to the agent
             "latency": duration
         }
+            
     except Exception as e:
         curr_err = str(e)
         terminal_logs.append(f"[ERROR] Pony Alpha: {curr_err}")
-        # Return error JSON rather than 500 to keep client alive
         return {"error": curr_err}
 
 @app.post("/api/vivace/generate")

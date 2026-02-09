@@ -1,9 +1,3 @@
----
-summary: "Workspace template for TOOLS.md"
-read_when:
-  - Bootstrapping a workspace manually
----
-
 # TOOLS.md - Local Notes
 
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
@@ -33,8 +27,9 @@ Things like:
 
 ### TTS
 
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
+- Preferred Provider: OpenAI TTS (tts-1)
+- Preferred voice: "Nova" (Clear, multilingual, handles Korean/English naturally)
+- Default speaker: Telegram (jayhomebot)
 ```
 
 ## Why Separate?
@@ -44,3 +39,14 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+### 🎵 Vivace Control (Music & Tech)
+Manage the Vivace Nexus system.
+
+- **Use 'render_video' to convert the latest music into an MP4 video.**
+
+- **Send Latest Music**: `python skills/vivace_control.py send_latest '{"chat_id": "7480526781"}'`
+- **Generate Music**: `python skills/vivace_control.py generate_music '{"title": "My Song", "prompt": "Piano ballad"}'`
+- **Render Video**: `python skills/vivace_control.py render_video '{"prompt": "default"}'`
+- **Deploy Team**: `python skills/vivace_control.py deploy_team '{"task": "Make a website"}'`
+

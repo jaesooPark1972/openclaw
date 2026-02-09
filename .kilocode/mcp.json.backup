@@ -155,13 +155,6 @@
                 "f:/AGen/mcp_servers/sota_video_mcp.py"
             ],
             "description": "🎬 [Titan] SOTA Video (CogVideoX/Wan2.1)"
-        },
-        "google-drive": {
-            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
-            "args": [
-                "d:/OpenClaw/mcp_servers/google_drive_mcp.py"
-            ],
-            "description": "📁 Google Drive Integration (Python Native)"
         }
     }
 }
