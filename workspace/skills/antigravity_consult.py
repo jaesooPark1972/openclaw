@@ -10,6 +10,9 @@ import json
 import requests
 import os
 
+# Force UTF-8 Output for Windows Console
+sys.stdout.reconfigure(encoding='utf-8')
+
 # Master API Endpoint (nexus_api.py가 8082에서 실행 중)
 NEXUS_API_BASE = "http://localhost:8082"
 

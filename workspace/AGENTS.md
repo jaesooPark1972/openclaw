@@ -90,6 +90,42 @@ D:\OpenClaw\.env
 
 ---
 
+## 👼 God Mode Gateway (텔레그램 바이패스 시스템)
+
+> **자세한 문서:** [`god_gateway.md`](./god_gateway.md)
+
+OpenClaw의 복잡한 게이트웨이를 우회하여 **텔레그램에서 직접 시스템을 제어**하는 초경량 게이트웨이.
+
+### 실행 방법
+```powershell
+# 1. 뇌(Nexus API) 시작
+python d:\OpenClaw\workspace\nexus_api.py --port 8082
+
+# 2. 게이트웨이 시작  
+python d:\OpenClaw\workspace\god_mode_gateway.py
+```
+
+### 텔레그램 명령어
+| 명령어 | 설명 |
+|--------|------|
+| (자연어) | Antigravity에게 질문/지시 |
+| `/exec <cmd>` | 시스템 명령어 직접 실행 |
+| `/ask <질문>` | 복잡한 질문 |
+| `/img <프롬프트>` | 이미지 생성 |
+| `/music <프롬프트>` | 음악 생성 |
+
+### 사용 중인 무료 LLM 
+- **Cerebras** (`CEREBRAS_API_KEY`) - llama-3.3-70b ✅ 현재 사용
+- OpenRouter (`OPENROUTER_API_KEY`) - 백업
+- SambaNova (`SAMBANOVA_API_KEY`) - 백업
+
+### 사망한 API (사용 금지)
+- ❌ Groq - 키 유출
+- ❌ Deepseek - 잔액 부족  
+- ❌ Gemini - 키 차단
+
+---
+
 # AGENTS.md - Development Guide (Legacy)
 
 ## 빌드/테스트 명령어
