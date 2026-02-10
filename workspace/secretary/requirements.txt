@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+requests
+pydantic
+transformers
+torch
+soundfile
+accelerate
+scipy
+edge-tts
+openai
+lancedb
+psycopg2-binary
+python-dotenv
+httpx
+mcp

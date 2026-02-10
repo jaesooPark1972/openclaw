@@ -1,7 +1,7 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.2.8-1",
-    "lastTouchedAt": "2026-02-08T18:44:00.000Z",
+    "lastTouchedVersion": "2026.2.8-2",
+    "lastTouchedAt": "2026-02-08T19:00:00.000Z",
     "masterEnvPath": "D:\\OpenClaw\\.env"
   },
   "agents": {
@@ -45,46 +45,117 @@
       {
         "id": "main",
         "name": "Nexus Orchestrator",
-        "description": "Personal Orchestration Assistant - Full autonomous execution",
+        "description": "Personal Orchestration Assistant - Full autonomous execution for safe operations, confirmation required for dangerous ones.",
         "tools": {
           "allow": [
-            "*"
+            "http_request",
+            "vivace_control",
+            "filesystem_read",
+            "filesystem_write",
+            "shell_safe",
+            "ocr_glm",
+            "stt_whisper",
+            "tts_reply",
+            "nexus_api"
           ],
-          "deny": []
+          "deny": [],
+          "exec": {
+            "allow": [
+              "python",
+              "node",
+              "cargo",
+              "pnpm",
+              "bun"
+            ],
+            "ask": "never"
+          },
+          "http": {
+            "ask": "on-miss",
+            "allow": [
+              "http://localhost:8080",
+              "http://localhost:8081",
+              "http://localhost:8082",
+              "http://127.0.0.1:8080",
+              "http://127.0.0.1:8081",
+              "http://127.0.0.1:8082"
+            ]
+          }
         },
         "execution": {
           "autoExecute": true,
-          "confirmBeforeExecution": []
+          "confirmBeforeExecution": [
+            "file_delete",
+            "file_move",
+            "shell_exec",
+            "http_external"
+          ]
         }
       },
       {
         "id": "musk-architect",
         "name": "Musk Architect",
-        "description": "High-level system architecture and decision making - Full access",
+        "description": "High-level system architecture and decision making - Read-heavy, confirmation for writes.",
         "tools": {
           "allow": [
-            "*"
+            "http_request",
+            "filesystem_read"
           ],
-          "deny": []
+          "deny": [],
+          "exec": {
+            "allow": [],
+            "ask": "always"
+          },
+          "http": {
+            "ask": "always",
+            "allow": [
+              "http://localhost:8080",
+              "http://127.0.0.1:8080"
+            ]
+          }
         },
         "execution": {
-          "autoExecute": true,
-          "confirmBeforeExecution": []
+          "autoExecute": false,
+          "confirmBeforeExecution": [
+            "file_write",
+            "file_delete",
+            "shell_exec",
+            "http_request"
+          ]
         }
       },
       {
         "id": "editorial-agent",
         "name": "Editorial Agent",
-        "description": "Content generation and editing through VIVACE API - Full access",
+        "description": "Content generation and editing through VIVACE API - Focused on content operations.",
         "tools": {
           "allow": [
-            "*"
+            "http_request",
+            "vivace_control",
+            "filesystem_read"
           ],
-          "deny": []
+          "deny": [],
+          "exec": {
+            "allow": [
+              "python"
+            ],
+            "ask": "always"
+          },
+          "http": {
+            "ask": "on-miss",
+            "allow": [
+              "http://localhost:8080",
+              "http://localhost:8082",
+              "http://127.0.0.1:8080",
+              "http://127.0.0.1:8082"
+            ]
+          }
         },
         "execution": {
           "autoExecute": true,
-          "confirmBeforeExecution": []
+          "confirmBeforeExecution": [
+            "file_delete",
+            "shell_exec"
+          ]
         }
       }
     ]

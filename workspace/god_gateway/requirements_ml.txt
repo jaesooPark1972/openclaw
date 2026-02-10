@@ -1,0 +1,11 @@
+torch
+tensorflow
+scikit-learn
+psutil
+onnxruntime
+lancedb
+fastapi
+uvicorn
+pydantic
+psycopg2-binary
+requests
