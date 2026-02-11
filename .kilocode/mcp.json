@@ -5,12 +5,12 @@
             "args": [
                 "-y",
                 "@modelcontextprotocol/server-filesystem",
-                "D:\\",
-                "C:\\",
-                "E:\\",
-                "F:\\",
-                "G:\\",
-                "I:\\"
+                "D:/",
+                "C:/",
+                "E:/",
+                "F:/",
+                "G:/",
+                "I:/"
             ]
         },
         "github": {
@@ -98,104 +98,126 @@
             "args": [
                 "f:/AGen/mcp_servers/brain_mcp.py"
             ],
-            "description": "🧠 AGen 두뇌: 하이브리드 추론 엔진 (로컬 BitNet + 클라우드 DeepSeek/Gemini)"
+            "description": "AGen Brain: Hybrid Reasoning Engine"
         },
         "agen-music": {
             "command": "f:/vivace/venv/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/agen_music_mcp.py"
             ],
-            "description": "🎵 AGen 음악: 작사→작곡→보컬합성→믹싱 풀 파이프라인"
+            "description": "AGen Music: Full Pipeline"
         },
         "agen-creative": {
             "command": "f:/vivace/venv/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/creative_society_mcp.py"
             ],
-            "description": "🎭 AGen 창작사회: 멀티에이전트 협업 (감독+아티스트+촬영팀)"
+            "description": "AGen Creative Society"
         },
         "agen-vision": {
             "command": "f:/vivace/venv/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/vision_mcp.py"
             ],
-            "description": "👁️ AGen 비전: 이미지 분석 및 시각적 이해"
+            "description": "AGen Vision: Image Analysis"
         },
         "agen-visual-router": {
             "command": "f:/vivace/venv/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/visual_router_mcp.py"
             ],
-            "description": "🎥 AGen 비주얼 라우터: ComfyUI/MiniMax/Flux 자동 분배"
+            "description": "AGen Visual Router"
         },
         "agen-ontology": {
             "command": "f:/vivace/venv/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/ontology_mcp.py"
             ],
-            "description": "🌐 AGen 온톨로지: 지식 저장 및 학습 시스템"
+            "description": "AGen Ontology: Knowledge System"
         },
         "agen-sota-music": {
             "command": "f:/AGen/.venv_titan/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/sota_music_mcp.py"
             ],
-            "description": "🎵 [Titan] SOTA Music (MusicGen-Large/Melody)"
+            "description": "[Titan] SOTA Music (MusicGen)"
         },
         "agen-sota-vision": {
             "command": "f:/AGen/.venv_titan/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/sota_vision_mcp.py"
             ],
-            "description": "🎨 [Titan] SOTA Vision (Flux.1-Schnell)"
+            "description": "[Titan] SOTA Vision (Flux)"
         },
         "agen-sota-video": {
             "command": "f:/AGen/.venv_titan/Scripts/python.exe",
             "args": [
                 "f:/AGen/mcp_servers/sota_video_mcp.py"
             ],
-            "description": "🎬 [Titan] SOTA Video (CogVideoX/Wan2.1)"
+            "description": "[Titan] SOTA Video (CogVideoX)"
         },
         "google-drive": {
-            "command": "npx",
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
             "args": [
-                "-y",
-                "@modelcontextprotocol/server-gdrive"
+                "d:/OpenClaw/mcp_servers/google_drive_mcp.py"
             ],
-            "env": {
-                "GOOGLE_CLIENT_ID": "266910974748-u3a4u1r6j4iqgfb0a1hvqv5huv7js6l6.apps.googleusercontent.com",
-                "GOOGLE_CLIENT_SECRET": "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",
-                "GOOGLE_REFRESH_TOKEN": "AQ.Ab8RN6JD2IseVW2ln_QO6HYj2bDDSQSYmO6fVVKF8J3lKMz1Qw"
-            }
+            "description": "Google Drive Integration"
         },
-        "openclaw-god-gateway": {
-            "command": "f:/vivace/venv/Scripts/python.exe",
+        "god-gateway-tools": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
             "args": [
                 "d:/OpenClaw/mcp_servers/god_gateway_tools.py"
             ],
-            "description": "🦞 God Gateway Tools: Everything Search, System Control"
+            "description": "God Gateway Tools"
         },
-        "openclaw-secretary": {
-            "command": "f:/vivace/venv/Scripts/python.exe",
+        "openclaw-agi-orchestrator": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
             "args": [
-                "d:/OpenClaw/workspace/secretary/secretary_mcp.py"
+                "d:/OpenClaw/mcp_servers/openclaw_agi_orchestrator.py"
             ],
-            "description": "👩‍💼 Secretary: Task Management, OCR, TTS"
+            "description": "OpenClaw AGI Orchestrator"
         },
-        "openclaw-stitch-loop": {
-            "command": "f:/vivace/venv/Scripts/python.exe",
+        "openclaw-creative-unified": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
+            "args": [
+                "d:/OpenClaw/mcp_servers/openclaw_creative_unified.py"
+            ],
+            "description": "OpenClaw Creative Unified"
+        },
+        "reasoning-logger": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
+            "args": [
+                "d:/OpenClaw/mcp_servers/reasoning_logger_mcp.py"
+            ],
+            "description": "Reasoning Logger"
+        },
+        "stitch-coder": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
             "args": [
                 "d:/OpenClaw/mcp_servers/stitch_coder_mcp.py"
             ],
-            "disabled": false,
-            "autoApprove": []
+            "description": "Stitch Coder"
         },
-        "openclaw-agen-pipeline": {
-            "command": "f:/vivace/venv/Scripts/python.exe",
+        "agen-pipeline": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
             "args": [
                 "d:/OpenClaw/mcp_servers/agen_pipeline_mcp.py"
             ],
-            "description": "🎵 AGen Pipeline: Music, Video, Creative Tools"
+            "description": "AGen Pipeline"
+        },
+        "antigravity-nexus-v5": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
+            "args": [
+                "d:/OpenClaw/mcp_servers/antigravity_nexus.v5_nexus.py"
+            ],
+            "description": "Antigravity Nexus v5"
+        },
+        "god-gateway-nexus-v5": {
+            "command": "d:/OpenClaw/.venv/Scripts/python.exe",
+            "args": [
+                "d:/OpenClaw/mcp_servers/god_gateway_nexus_v5.py"
+            ],
+            "description": "God Gateway Nexus v5"
         }
     }
 }

@@ -59,11 +59,14 @@ load_env()
 
 CONFIG = {
     "ollama_host": os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
-    "ollama_model": os.environ.get("OLLAMA_MODEL", "llama3.2:latest"),
+    "ollama_model": os.environ.get("OLLAMA_MODEL", "exaone3.5:latest"), 
     "telegram_token": os.environ.get("TELEGRAM_TOKEN", ""),
     "telegram_enabled": bool(os.environ.get("TELEGRAM_TOKEN")),
     "gateway_port": int(os.environ.get("OPENCLAW_GATEWAY_PORT", 8095)),
 }
+
+
+
 
 print(f"""
 ========================================
@@ -178,36 +181,29 @@ class TelegramBot:
         self._init_db()
 
     def _init_db(self):
-        """Initialize PostgreSQL connection and schema"""
+        """Initialize SQLite connection (Replaces PostgreSQL for stability)"""
         try:
-            import psycopg2
-            self.db_conn = psycopg2.connect(
-                host="localhost",
-                database="antigravity_db",
-                user="user",
-                password="password"
-            )
-            self.db_conn.autocommit = True
-            with self.db_conn.cursor() as cur:
-                cur.execute("""
+            import sqlite3
+            db_path = Path("D:/OpenClaw/workspace/data/telegram_chat.db")
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            self.db_conn = sqlite3.connect(str(db_path), check_same_thread=False)
+            with self.db_conn:
+                self.db_conn.execute("""
                     CREATE TABLE IF NOT EXISTS telegram_history (
-                        id SERIAL PRIMARY KEY,
-                        chat_id BIGINT,
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        chat_id INTEGER,
                         username TEXT,
                         role TEXT,
                         message TEXT,
-                        context JSONB,
-                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        context TEXT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                     );
                 """)
-            print("[Telegram] DB Connected & Table Verified")
+            print(f"[Telegram] SQLite DB Connected: {db_path.name}")
         except Exception as e:
-            # Handle potential encoding errors during error printing (Korean Windows CP949 vs UTF-8)
-            err_msg = str(e)
-            try:
-                print(f"[Telegram] DB Init Failed: {err_msg}")
-            except UnicodeEncodeError:
-                print(f"[Telegram] DB Init Failed: {err_msg.encode('utf-8', 'ignore').decode('utf-8')}")
+            self.db_conn = None
+            print(f"[Telegram] DB Init Failed: {e}")
 
     async def start(self):
         if not self.token:
@@ -260,9 +256,21 @@ class TelegramBot:
             if text.startswith("/archive"):
                 await self._archive_history(chat_id)
                 return
+            
+            if text.startswith("/air"):
+                prompt = text.replace("/air", "").strip()
+                if not prompt:
+                    await self._send_response(chat_id, "🔍 Please provide a prompt: `/air [message]`")
+                    return
+                
+                await self._send_response(chat_id, "🧠 **Deep Reasoning Mode (AirLLM Qwen3 80B Thinking)**\nThis will take 2-5 minutes. Please wait... ⏳")
+                response = await self._process_with_airllm(prompt)
+                await self._send_response(chat_id, f"✅ **AirLLM Response:**\n\n{response}")
+                await self._log_to_db(chat_id, "OpenClaw-AirLLM", "assistant", response)
+                return
 
             try:
-                # 3. Process with Memory & LLM
+                # 3. Process with Memory & LLM (Standard Ollama)
                 response = await self._process_with_ollama(text)
                 
                 # 4. Send & Log Response
@@ -271,96 +279,89 @@ class TelegramBot:
             except Exception as e:
                 print(f"[Telegram] Processing failed: {e}")
                 await self._send_response(chat_id, "⚠️ I'm analyzing the void... (Error processing message)")
+        """Log message to SQLite and Vector Memory"""
 
-    async def _process_with_ollama(self, text: str) -> str:
-        import httpx
-        ollama = OllamaClient()
-        
-        # 1. Retrieve Memory (RAG)
-        context_str = ""
+    async def _process_with_airllm(self, prompt: str) -> str:
+        """Execute AirLLM Inference via subprocess (72B Model)"""
         try:
-            # Query God Gateway Nexus (Port 8095 for v5)
+            python_exe = "f:/vivace/venv/Scripts/python.exe"
+            script_path = "d:/OpenClaw/workspace/airllm_inference.py"
+            
+            process = await asyncio.create_subprocess_exec(
+                python_exe, script_path, prompt,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            
+            stdout, stderr = await process.communicate()
+            
+            if process.returncode == 0:
+                output = stdout.decode('utf-8', errors='ignore')
+                if "✅ Output:" in output:
+                    return output.split("✅ Output:")[1].strip()
+                return output.strip()
+            return f"❌ AirLLM Error: {stderr.decode('utf-8', errors='ignore')}"
+        except Exception as e:
+            return f"❌ System Error calling AirLLM: {e}"
+
+    async def _process_with_ollama(self, prompt: str) -> str:
+        """Standard Ollama generation (Exaone 3.5)"""
+        client = OllamaClient()
+        return await client.generate(prompt)
+
+    async def _send_response(self, chat_id: int, text: str):
+        """Send message via Telegram API"""
+        import httpx
+        try:
             async with httpx.AsyncClient() as client:
-                mem_resp = await client.get(
-                    "http://localhost:8095/api/memory/search",
-                    params={"query": text},
-                    timeout=5.0
+                await client.post(
+                    f"https://api.telegram.org/bot{self.token}/sendMessage",
+                    json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
                 )
-                if mem_resp.status_code == 200:
-                    results = mem_resp.json().get("results", [])
-                    if results:
-                        context_str = "\n".join([f"- {r}" for r in results[:3]])
-                        print(f"[Memory] Found {len(results)} relevant memories")
         except Exception as e:
-            print(f"[Memory] Retrieval failed: {e}")
-
-        # 2. Construct Prompt
-        prompt = f"""You are OpenClaw (Antigravity), a highly advanced AI system.
-        
-[MEMORY CONTEXT]
-{context_str}
-
-[USER REQUEST]
-{text}
-
-[INSTRUCTION]
-Respond to the user naturally. Use the memory context if relevant.
-"""
-        return await ollama.generate(prompt)
-    
-    async def _send_response(self, chat_id: str, text: str):
-        import httpx
-        payload = {"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
-        try:
-            async with httpx.AsyncClient() as client:
-                await client.post(f"https://api.telegram.org/bot{self.token}/sendMessage", json=payload, timeout=10)
-        except Exception as e:
-            print(f"[Telegram] Send failed: {e}")
+            print(f"[Telegram] Failed to send: {e}")
 
     async def _log_to_db(self, chat_id, username, role, message, context=None):
-        """Log message to PostgreSQL and Vector Memory (God Gateway)"""
-        # PostgreSQL Log
+        """Log message to SQLite and Vector Memory"""
         if self.db_conn:
             try:
-                with self.db_conn.cursor() as cur:
-                    cur.execute(
-                        "INSERT INTO telegram_history (chat_id, username, role, message, context) VALUES (%s, %s, %s, %s, %s)",
+                import json
+                with self.db_conn:
+                    self.db_conn.execute(
+                        "INSERT INTO telegram_history (chat_id, username, role, message, context) VALUES (?, ?, ?, ?, ?)",
                         (chat_id, username, role, message, json.dumps(context) if context else None)
                     )
             except Exception as e:
                 print(f"[DB Log Error] {e}")
 
-        # God Gateway Memory Sync (Vector DB)
+        # Sync to Vector DB
         try:
             import httpx
             memory_content = f"{username} ({role}): {message}"
             async with httpx.AsyncClient() as client:
                 await client.post(
                     "http://localhost:8095/memory/add",
-                    json={"content": memory_content, "metadata": {"chat_id": chat_id, "role": role, "timestamp": str(datetime.now())}},
+                    json={"content": memory_content, "metadata": {"chat_id": chat_id, "role": role}},
                     timeout=2.0
                 )
-        except Exception as e:
-            pass # Non-blocking
+        except:
+            pass
 
     async def _archive_history(self, chat_id: int):
-        """Dump chat history and Upload to Google Drive"""
+        """Dump chat history from SQLite and Upload to Google Drive"""
         if not self.db_conn:
             await self._send_response(chat_id, "❌ Database not connected.")
             return
 
         filename = f"telegram_archive_{chat_id}_{int(datetime.now().timestamp())}.json"
-        
-        # Ensure data directory exists
         data_dir = Path("D:/OpenClaw/workspace/data")
-        data_dir.mkdir(parents=True, exist_ok=True)
         filepath = data_dir / filename
 
         try:
-            # 1. Export from DB
-            with self.db_conn.cursor() as cur:
-                cur.execute("SELECT role, username, message, timestamp FROM telegram_history WHERE chat_id = %s ORDER BY timestamp", (chat_id,))
-                rows = cur.fetchall()
+            # 1. Export from SQLite
+            cursor = self.db_conn.cursor()
+            cursor.execute("SELECT role, username, message, timestamp FROM telegram_history WHERE chat_id = ? ORDER BY timestamp", (chat_id,))
+            rows = cursor.fetchall()
             
             data = [{"role": r[0], "user": r[1], "msg": r[2], "time": str(r[3])} for r in rows]
             
@@ -372,7 +373,6 @@ Respond to the user naturally. Use the memory context if relevant.
             # 2. Upload to Google Drive
             await self._send_response(chat_id, "☁️ Uploading to Google Drive...")
             
-            # Dynamic import to avoid path issues if file missing
             sys.path.append(str(Path.cwd() / "workspace"))
             try:
                 import google_drive_uploader

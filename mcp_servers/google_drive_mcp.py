@@ -3,6 +3,7 @@ import os
 import io
 import sys
 import logging
+import glob
 from typing import List, Optional
 from mcp.server.fastmcp import FastMCP
 from google.oauth2.credentials import Credentials
@@ -11,25 +12,53 @@ from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload, MediaIoBa
 from dotenv import load_dotenv
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-env_path = r"D:/OpenClaw/.env"
-load_dotenv(env_path)
-
-# Initialize FastMCP Server
-mcp = FastMCP("Google-Drive-Py")
+def find_env_file():
+    """Find .env file in common locations"""
+    possible_paths = [
+        r"D:/OpenClaw/.env",
+        r"d:/OpenClaw/.env",
+        ".env",
+        "../.env",
+        "../../.env"
+    ]
+    for path in possible_paths:
+        if os.path.exists(path):
+            logger.info(f"Found .env at: {path}")
+            return path
+    logger.warning("No .env file found")
+    return None
 
 def get_drive_service():
+    """Initialize Google Drive API service with error handling"""
     try:
-        refresh_token = os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN")
-        client_id = os.getenv("GOOGLE_CLIENT_ID")
-        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        # Find and load env file
+        env_path = find_env_file()
+        if env_path and os.path.exists(env_path):
+            load_dotenv(env_path)
+            logger.info(f"Loaded env from: {env_path}")
+        else:
+            # Try loading from current directory
+            load_dotenv()
+            logger.info("Attempted load_dotenv() without path")
+        
+        # Debug: log available env vars (masked)
+        refresh_token = os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN") or os.getenv("GOOGLE_DRIVE_TOKEN")
+        client_id = os.getenv("GOOGLE_CLIENT_ID") or os.getenv("GOOGLE_DRIVE_CLIENT_ID")
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET") or os.getenv("GOOGLE_DRIVE_CLIENT_SECRET")
+        
+        logger.info(f"Refresh token present: {bool(refresh_token)}")
+        logger.info(f"Client ID present: {bool(client_id)}")
+        logger.info(f"Client secret present: {bool(client_secret)}")
         
         if not all([refresh_token, client_id, client_secret]):
-            # Fallback for checking if env loaded correctly
-            logger.error(f"Missing Google Drive credentials in .env. Loaded from {env_path}")
+            missing = []
+            if not refresh_token: missing.append("GOOGLE_DRIVE_REFRESH_TOKEN")
+            if not client_id: missing.append("GOOGLE_CLIENT_ID")
+            if not client_secret: missing.append("GOOGLE_CLIENT_SECRET")
+            logger.error(f"Missing credentials: {missing}")
             return None
 
         creds = Credentials(
@@ -39,10 +68,17 @@ def get_drive_service():
             client_id=client_id,
             client_secret=client_secret
         )
-        return build('drive', 'v3', credentials=creds)
+        
+        service = build('drive', 'v3', credentials=creds)
+        logger.info("Google Drive service initialized successfully")
+        return service
+        
     except Exception as e:
-        logger.error(f"Failed to initialize Drive service: {e}")
+        logger.error(f"Failed to initialize Drive service: {e}", exc_info=True)
         return None
+
+# Initialize FastMCP Server
+mcp = FastMCP("Google-Drive-Py")
 
 @mcp.tool()
 async def gdrive_list_files(query: str = None, page_size: int = 10, folder_id: str = None) -> str:

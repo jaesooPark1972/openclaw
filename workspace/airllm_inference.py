@@ -18,8 +18,8 @@ except ImportError:
     print("❌ AirLLM not installed. Run: pip install airllm")
     sys.exit(1)
 
-model_id = "meta-llama/Meta-Llama-3-70B-Instruct"  # Default 70B model
-# model_id = "garage-bAInd/Platypus2-70B-instruct" 
+model_id = "Qwen/Qwen3-Next-80B-A3B-Thinking"  # SOTA Qwen3 Series 80B (Thinking Mode)
+# model_id = "Qwen/Qwen2.5-72B-Instruct" 
 
 def run_inference(prompt: str):
     print(f"🚀 Initializing AirLLM with model: {model_id}")
