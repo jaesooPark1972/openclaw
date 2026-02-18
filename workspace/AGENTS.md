@@ -33,6 +33,8 @@ Your job is to **DO THEM** using your tools.
 | `nexus_api.py` | `D:\OpenClaw\workspace\` | Core API orchestration |
 | `voice_watcher.py` | `D:\OpenClaw\workspace\` | Audio file monitoring & processing |
 | `tts_reply.py` | `D:\OpenClaw\workspace\` | Text-to-Speech generation |
+| `memory_mcp.py` | `D:\OpenClaw\mcp_servers\` | **Unified Memory Nexus (SQL + Vector)** |
+| `gmail_mcp.py` | `D:\OpenClaw\mcp_servers\` | **Gmail Access (Read/Summarize)** |
 
 ## 🎯 도구 호출 규칙 (Tool Invocation Rules)
 
@@ -43,6 +45,7 @@ Your job is to **DO THEM** using your tools.
 - `http_request` → 로컬 API 호출 (localhost:8080, 8081, 8082)
 - `tts_reply.py` → 음성 합성
 - `stt_whisper.py` → 음성 인식
+- `remember_fact`, `recall_facts` → **기억 저장 및 회상**
 
 ### ⚠️ 승인 필요 (Ask First)
 - 파일 삭제/이동, 외부 HTTP 요청, 셸 명령 실행

@@ -26,7 +26,8 @@
         "D:\\OpenClaw\\workspace\\skills\\nexus_api.py",
         "D:\\OpenClaw\\workspace\\mcp_servers\\glm_ocr_mcp.py",
         "D:\\OpenClaw\\workspace\\skills\\stt_whisper.py",
-        "D:\\OpenClaw\\workspace\\skills\\tts_reply.py"
+        "D:\\OpenClaw\\workspace\\skills\\tts_reply.py",
+        "D:\\OpenClaw\\workspace\\mcp_servers\\upstash_mcp.py"
       ]
     },
     "list": [
@@ -47,7 +48,10 @@
             "ocr_glm",
             "stt_whisper",
             "tts_reply",
-            "nexus_api"
+            "nexus_api",
+            "save_global_memory",
+            "query_global_memory",
+            "delete_global_memory"
           ],
           "deny": [],
           "exec": {

@@ -59,7 +59,7 @@ load_env()
 
 CONFIG = {
     "ollama_host": os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
-    "ollama_model": os.environ.get("OLLAMA_MODEL", "exaone3.5:latest"), 
+    "ollama_model": os.environ.get("OLLAMA_MODEL", "gpt-5.1-codex-mini"), 
     "telegram_token": os.environ.get("TELEGRAM_TOKEN", ""),
     "telegram_enabled": bool(os.environ.get("TELEGRAM_TOKEN")),
     "gateway_port": int(os.environ.get("OPENCLAW_GATEWAY_PORT", 8095)),
@@ -306,8 +306,128 @@ class TelegramBot:
 
     async def _process_with_ollama(self, prompt: str) -> str:
         """Standard Ollama generation (Exaone 3.5)"""
+        
+        # --- GMAIL INJECTION START ---
+        email_context = ""
+        gmail_status_msg = ""
+        
+        if "mail" in prompt.lower() or "메일" in prompt or "gmail" in prompt.lower():
+            print("[System] Gmail intent detected.")
+            
+            # FORCE RELOAD ENV to ensure latest token is picked up
+            from dotenv import load_dotenv
+            load_dotenv("d:/OpenClaw/.env", override=True)
+            
+            token = os.environ.get("GOOGLE_GMAIL_REFRESH_TOKEN")
+            client_id = os.environ.get("GOOGLE_CLIENT_ID")
+            client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+            
+            if not token:
+                print("[Gmail] Token missing.")
+                gmail_status_msg = (
+                    "⚠️ **Gmail 연동이 설정되지 않았습니다.**\n"
+                    "서버의 `.env` 파일에 `GOOGLE_GMAIL_REFRESH_TOKEN`이 없습니다.\n"
+                    "인증 스크립트를 실행하여 토큰을 발급받아주세요."
+                )
+            else:
+                try:
+                    print("[System] Fetching Gmail summary...")
+                    from google.oauth2.credentials import Credentials
+                    from googleapiclient.discovery import build
+                    
+                    creds = Credentials(
+                        None, refresh_token=token,
+                        token_uri="https://oauth2.googleapis.com/token",
+                        client_id=client_id, client_secret=client_secret
+                    )
+                    service = build('gmail', 'v1', credentials=creds)
+                    results = service.users().messages().list(userId='me', maxResults=3).execute()
+                    messages = results.get('messages', [])
+                    
+                    if messages:
+                        summary_lines = []
+                        for msg in messages:
+                            try:
+                                txt = service.users().messages().get(userId='me', id=msg['id']).execute()
+                                headers = txt['payload']['headers']
+                                subject = next((h['value'] for h in headers if h['name'] == 'Subject'), '(No Subject)')
+                                sender = next((h['value'] for h in headers if h['name'] == 'From'), '(Unknown)')
+                                snippet = txt.get('snippet', '')
+                                summary_lines.append(f"- 보낸사람: {sender}\n  제목: {subject}\n  내용: {snippet}")
+                            except:
+                                continue
+                        
+                        email_context = "\n".join(summary_lines)
+                        print(f"[System] Injected {len(summary_lines)} emails.")
+                        print(f"--- [DEBUG: Fetched Emails] ---\n{email_context}\n-------------------------------")
+                    else:
+                        email_context = "(최근 이메일이 없습니다.)"
+                        print("[System] No recent emails found.")
+                        
+                except Exception as e:
+                    print(f"[Gmail Error] {e}")
+                    gmail_status_msg = f"⚠️ **이메일 가져오기 실패**\n오류: {str(e)}"
+
+        # 1. Load Soul (Identity)
+        soul_path = Path("d:/OpenClaw/workspace/SOUL.md")
+        soul_content = ""
+        if soul_path.exists():
+            try:
+                with open(soul_path, "r", encoding="utf-8") as f:
+                    soul_content = f.read()
+            except Exception as e:
+                print(f"[Soul] Error reading soul: {e}")
+
+        # 2. Define Base Persona (Kkoma)
+        base_identity = (
+            "You are '꼬마' (Kid), a loyal and cute AI assistant for your master '주인님' (Master) (Great Park Jaesoo).\n"
+            "You must ALWAYS address the user as '주인님'.\n"
+            "You are NOT 'EXAONE' or 'GPT'. You are 'OpenClaw's Kid'.\n"
+            "Act cute, helpful, and concise.\n"
+            "Speak in Korean unless asked otherwise.\n"
+        )
+        
+        # 3. Load Agents Manifesto (Capabilities & Tools)
+        agents_path = Path("d:/OpenClaw/workspace/AGENTS.md")
+        agents_content = ""
+        if agents_path.exists():
+            try:
+                with open(agents_path, "r", encoding="utf-8") as f:
+                    agents_content = f.read()
+            except Exception as e:
+                print(f"[Agents] Error reading AGENTS.md: {e}")
+
+        # 4. Combine Soul + Identity + Agents
+        full_system_prompt = (
+            f"{base_identity}\n\n"
+            f"[YOUR SOUL (BEHAVIOR GUIDELINES)]:\n{soul_content}\n\n"
+            f"[YOUR CAPABILITIES & TOOLS (AGENTS.MD)]:\n{agents_content}\n"
+        )
+
+        # Construct final prompt with strong system instruction
+        final_prompt = f"[SYSTEM: {full_system_prompt}]\n\n"
+        
+        if gmail_status_msg:
+             # We append this to the prompt so the LLM *knows* it failed and can explain it to the user
+             final_prompt += (
+                 f"[SYSTEM: You attempted to access Gmail but failed.]\n"
+                 f"[ERROR INFO: {gmail_status_msg}]\n"
+                 f"[INSTRUCTION: Explain to the user that Gmail access failed due to the error above.]\n\n"
+                 f"User: {prompt}"
+             )
+        elif email_context:
+             final_prompt += (
+                f"[SYSTEM: You are an AI with DIRECT ACCESS to the user's Gmail. Here are the 3 most recent emails:]\n"
+                f"{email_context}\n\n"
+                f"[INSTRUCTION: Answer the user's request based on the email data above. Do NOT say you cannot check email.]\n\n"
+                f"User: {prompt}"
+            )
+        else:
+            final_prompt += f"User: {prompt}"
+        # --- GMAIL INJECTION END ---
+
         client = OllamaClient()
-        return await client.generate(prompt)
+        return await client.generate(final_prompt)
 
     async def _send_response(self, chat_id: int, text: str):
         """Send message via Telegram API"""

@@ -125,6 +125,40 @@ async def call_openclaw_nano(text: str):
     [Nano-Mode v5] Direct Brain Bypass - Using Cerebras
     Cerebras offers truly free unlimited inference.
     """
+    
+    # --- GMAIL INJECTION START ---
+    if "mail" in text.lower() or "메일" in text or "gmail" in text.lower():
+        try:
+            from google.oauth2.credentials import Credentials
+            from googleapiclient.discovery import build
+            
+            token = os.environ.get("GOOGLE_GMAIL_REFRESH_TOKEN")
+            client_id = os.environ.get("GOOGLE_CLIENT_ID")
+            client_secret = os.environ.get("GOOGLE_CLIENT_SECRET")
+            
+            if token and client_id and client_secret:
+                creds = Credentials(None, refresh_token=token, token_uri="https://oauth2.googleapis.com/token", client_id=client_id, client_secret=client_secret)
+                service = build('gmail', 'v1', credentials=creds)
+                results = service.users().messages().list(userId='me', maxResults=3).execute()
+                messages = results.get('messages', [])
+                
+                if messages:
+                    summary_lines = []
+                    for msg in messages:
+                        txt = service.users().messages().get(userId='me', id=msg['id']).execute()
+                        headers = txt['payload']['headers']
+                        subject = next((h['value'] for h in headers if h['name'] == 'Subject'), '(No Subject)')
+                        sender = next((h['value'] for h in headers if h['name'] == 'From'), '(Unknown)')
+                        snippet = txt.get('snippet', '')
+                        summary_lines.append(f"- From: {sender}\n  Subject: {subject}\n  Snippet: {snippet}")
+                    
+                    email_context = "\n".join(summary_lines)
+                    text += f"\n\n[SYSTEM: The user has these recent emails. Answer based on them.]\n{email_context}"
+                    terminal_logs.append(f"[System] Injected {len(messages)} emails into Nexus prompt.")
+        except Exception as e:
+            terminal_logs.append(f"[Gmail Error] {e}")
+    # --- GMAIL INJECTION END ---
+
     cerebras_key = os.getenv("CEREBRAS_API_KEY", "").strip(" \"'\n\t")
     if not cerebras_key:
         return "Error: Missing CEREBRAS_API_KEY"
