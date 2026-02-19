@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "88c0bfcf-b090-4ff7-a96e-8ac6760d40ec",
+      "name": "daily-briefing",
+      "enabled": true,
+      "createdAtMs": 1771539353854,
+      "updatedAtMs": 1771539353854,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Seoul"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "주인님의 일일 브리핑: 1) memory/ 로그 핵심 요약 2) 오늘 예정 작업 3) 시스템 상태 요약 4) 중요 알림. 간결하게 작성하세요.",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1771542000000
+      }
+    },
+    {
+      "id": "c6fed26b-f967-4fcb-9e60-e8c7df2f3f65",
+      "name": "system-healthcheck",
+      "enabled": true,
+      "createdAtMs": 1771539371531,
+      "updatedAtMs": 1771539371531,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */6 * * *",
+        "tz": "Asia/Seoul",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "시스템 헬스체크: 현재 시간/업타임, 메모리 인덱스 상태, 에러 로그 확인. 이상 있으면 보고, 없으면 NO_REPLY",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1771556596714
+      }
+    },
+    {
+      "id": "442f9782-e235-46ce-9202-0262269e79c0",
+      "name": "weekly-memory-review",
+      "enabled": true,
+      "createdAtMs": 1771539386526,
+      "updatedAtMs": 1771539386526,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 21 * * 0",
+        "tz": "Asia/Seoul"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "주간 리뷰: 이번 주 memory/ 로그 검토, 반복 패턴/핵심 결정사항/미완료 작업 식별, MEMORY.md 업데이트, 다음 주 권장 작업 목록 작성",
+        "timeoutSeconds": 180
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1771761600000
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.17",
+    "lastTouchedAt": "2026-02-20T07:11:00.000Z"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.3-codex"
+      },
+      "workspace": "~/.openclaw/workspace",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8,
+        "thinking": "medium"
+      },
+      "memorySearch": {
+        "enabled": true,
+        "provider": "openai",
+        "model": "text-embedding-3-small",
+        "sources": ["memory", "sessions"],
+        "experimental": {
+          "sessionMemory": true
+        },
+        "query": {
+          "maxResults": 8,
+          "hybrid": {
+            "enabled": true,
+            "vectorWeight": 0.7,
+            "textWeight": 0.3,
+            "candidateMultiplier": 4
+          }
+        },
+        "cache": {
+          "enabled": true,
+          "maxEntries": 50000
+        },
+        "sync": {
+          "watch": true,
+          "onSessionStart": true,
+          "onSearch": true,
+          "sessions": {
+            "deltaBytes": 50000,
+            "deltaMessages": 25
+          }
+        },
+        "extraPaths": ["~/OpenClaw/skills"]
+      },
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      }
+    }
+  },
+  "memory": {
+    "citations": "auto"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  }
+}
