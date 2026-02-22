@@ -1,0 +1,29 @@
+{
+  "version": "2026-02-19",
+  "policy": {
+    "document_review": {
+      "input_type": "image_or_scan_pdf",
+      "primary_model": "glm-ocr:latest",
+      "fallback_model": "qwen3-vl:8b",
+      "post_process_model": "qwen3:latest",
+      "steps": [
+        "extract_text_with_ocr",
+        "normalize_text",
+        "summarize_and_validate_numbers",
+        "produce_actionable_report"
+      ]
+    },
+    "text_only_review": {
+      "primary_model": "qwen3:latest",
+      "fallback_model": "exaone3.5:latest"
+    },
+    "coding_tasks": {
+      "primary_model": "qwen2.5-coder:7b",
+      "fallback_model": "qwen3-coder:latest"
+    }
+  },
+  "resource_constraints": {
+    "vram_gb": 8,
+    "rule": "keep_only_one_heavy_model_loaded"
+  }
+}
